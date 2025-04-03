@@ -275,16 +275,36 @@ And then paste the copied directory from the USB stick to `$HOME/Games/W3Champio
     cp -r /mnt/com.w3champions.client "$HOME/Games/W3Champions/drive_c/users/steamuser/AppData/Local/com.w3champions.client"
 
 > [!NOTE]  
-> You `/mnt/com.w3champions.client` assumes that you mounted the USB drive at `/mnt` and that it contains the directory there.
+> The path `/mnt/com.w3champions.client` assumes that you mounted the USB drive at `/mnt` and that it contains the directory there.
 > Adjust this to however you have to.
 
 ### Postinstallation Steps
 
-## Useful Links
+You can now launch W3Champions, and it should actually work.
+When it boots up the first time, W3Champions will launch the Warcraft III game in offline mode and configure it for use by W3Champions.
 
-- [Official W3Champions Website](https://www.w3champions.com)
-- [Lutris](https://lutris.net)
-- [WineHQ](https://www.winehq.org)
+> [!IMPORTANT]  
+> Do not interact with the launched Warcraft III window.
+
+W3Champions will proceed to install Bonjour for the first time and join a test game on LAN in Warcraft III.
+This should work without any actions. On subsequent launcher startups though, we have to restart the `Bonjour Service` for some reason.
+To automate this, you can write a batch file somewhere with this content and save it.
+
+```batch
+C:
+cd C:\Program Files\W3Champions\
+start W3Champions.exe
+timeout 5
+net stop "Bonjour Service"
+net start "Bonjour Service"
+```
+
+Then select that file as the game executable in lutris.
+
+This will make W3Champions pass the LAN test and you are ready to climb the ladder on linux.
+
+## Discord
+
 - [W3Champions Discord](https://discord.gg/uJmQxG2)
 
 Happy ladder climbing! 🎮
