@@ -220,9 +220,63 @@ Click Apply and OK.
 
 ### Installing Battle.net
 
-### Installing Warcraft III: Reforged
+Next, installing Battle.net which can be downloaded [here](https://download.battle.net/en-us/?product=bnetdesk).
+
+Alternatively, using `curl`
+
+    curl -L "https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe" --output "$HOME/Downloads/Battle.net-Setup.exe"
+
+Run this exe inside the prefix.
+This will be a standard Battle.net install.
+After installation, login with your Battle.net ID and download Warcraft III: Reforged.
+Once Warcraft III was downloaded, start it up.
+The lion gate should open and the Blizzard Browser should render properly.
+If this is not the case, you may have not the correct Vulkan drivers or GPU drivers installed, or your GPU is incompatible.
+Adjust your preferred settings and make sure the reforged mode is deactivated.
+Close the game and exit Battle.net after confirming Warcraft III works.
 
 ### Installing W3Champions
+
+We can install W3Champions now from [here](https://w3champions.com/getting-started).
+
+Alternatively, using `curl`
+
+    curl -L "https://update-service.w3champions.com/api/launcher-e" --output "$HOME/Downloads/W3Champions_latest_x64_en-US.msi"
+
+Run this exe inside the prefix.
+Do not yet launch W3Champions after the installation finishes.
+
+![W3Champions install](./assets/w3c-install.png)
+
+Then, you can configure the lutris game once again.
+Select the executable to be `$HOME/Games/W3Champions/drive_c/Program Files/W3Champions/W3Champions.exe` and Save.
+
+![W3Champions exe](./assets/w3c-exe.png)
+
+### Running and signing in to W3Champions
+
+You can now double click the W3Champions game in lutris and sign in next.
+This step breaks most of the times. We still don't quite understand what exactly makes it break or succeed.
+Pressing Sign In will likely cause the launcher to crash.
+However, it can work. Starting the launcher, then starting Battle.net, then resetting the Battle.net state can help.
+Pressing Sign In may render the Blizzard Auth UI. Sometimes just trying a few times also works.
+If it simply won't work even after a few tries, there is still a method to Sign In, however it is a real PITA.
+
+#### Bypassing the W3Champions Sign In
+
+To bypass the Sign In, we have to make W3Champions think that we already signed in. We can do that by, well, signing in. Just not linux, but on... Windows 🤐.
+Fortunately, a virtual machine will be sufficient. Get into a running Windows system, download and launch W3Champions and sign in.
+That will write the information needed for W3Champions to verify you signed in into the AppData.
+You can then copy the `C:\users\<user>\AppData\Local\com.w3champions.client` directory to a USB drive.
+Then get back into linux, remove the `$HOME/Games/W3Champions/drive_c/users/steamuser/AppData/Local/com.w3champions.client` directory.
+And then paste the copied directory from the USB stick to `$HOME/Games/W3Champions/drive_c/users/steamuser/AppData/Local/com.w3champions.client`.
+
+    rm -rf "$HOME/Games/W3Champions/drive_c/users/steamuser/AppData/Local/com.w3champions.client"
+    cp -r /mnt/com.w3champions.client "$HOME/Games/W3Champions/drive_c/users/steamuser/AppData/Local/com.w3champions.client"
+
+> [!NOTE]  
+> You `/mnt/com.w3champions.client` assumes that you mounted the USB drive at `/mnt` and that it contains the directory there.
+> Adjust this to however you have to.
 
 ### Postinstallation Steps
 
