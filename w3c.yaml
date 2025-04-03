@@ -1,0 +1,60 @@
+description: "Installs WebView2 + Battle.net + W3Champions. Note: Proton-GE-9-26 is recommended. You need to run Battle.Net, install and then run Warcraft III before W3Champions will work. Then have Battle.net running before running W3Champions."
+game_slug: w3champions
+installer_slug: w3champions
+name: "W3Champions"
+runner: wine
+script:
+  files:
+    - battlenet:
+        filename: Battle.net-Setup.exe
+        url: https://www.battle.net/download/getInstallerForGame?os=win&version=LIVE&gameProgram=BATTLENET_APP
+    - w3champions:
+        filename: W3Champions_1.5.27_x64_en-US.msi
+        url: https://update-service.w3champions.com/api/launcher-e
+    - webview2:
+        filename: MicrosoftEdgeWebview2RuntimeInstallerX64.exe
+        url: https://go.microsoft.com/fwlink/?linkid=2124701
+  game:
+    arch: win64
+    exe: drive_c/Program Files/W3Champions/W3Champions.exe
+    prefix: $GAMEDIR
+  installer:
+    - task:
+        arch: win64
+        description: "Creating 64bit Wine prefix."
+        name: create_prefix
+        prefix: $GAMEDIR
+    - task:
+        arch: win64
+        description: "Installing W3Champions..."
+        executable: w3champions
+        prefix: $GAMEDIR
+        name: wineexec
+    - task:
+        arch: win64
+        executable: battlenet
+        name: wineexec
+        description: "Installing Battle.net"
+        prefix: $GAMEDIR
+    - task:
+        arch: win64
+        description: "Installing WebView2"
+        prefix: $GAMEDIR
+        executable: webview2
+        name: wineexec
+        exclude_processes: MicrosoftEdgeUpdate.exe
+    - task:
+        arch: win64
+        description: "Setting msedgewebview2.exe to Windows 7 so WebView2 apps render instead of black screen"
+        key: Version
+        name: set_regedit
+        path: HKEY_CURRENT_USER\Software\Wine\AppDefaults\msedgewebview2.exe
+        prefix: $GAMEDIR
+        value: win7
+  system:
+    env:
+      PROTON_VERB: run
+slug: warcraft-iii-reforged-battlenet-w3champions-webview2
+steamid: null
+version: Battle.net + w3champions + webview2
+year: 2020

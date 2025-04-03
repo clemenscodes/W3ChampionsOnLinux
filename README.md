@@ -104,26 +104,62 @@ By default, lutris will download and use wine-ge-8-26.
 This version however does _NOT_ work for W3Champions!
 You will not be able to install the required WebView2 runtime using that wine version.
 
+> [!CAUTION]
+> After lutris downloaded `wine-ge-8-26`, it will set that wine version as the default runner for all wine builds.
+> Make sure that, after that downloaded, you change the runner from `wine-ge-8-26` back to `Proton-GE (Latest)`!
+> Forgetting to do so may require starting the whole installation process from scratch in a fresh wine prefix.
+
 In lutris, select the Wine runner on the left side.
 
-![./assets/wine-runner-lutris.png]
+![Wine runner](./assets/wine-runner-lutris.png)
 
 Then change the runner to Proton-GE (Latest)
 
-![./assets/proton-ge-runner.png]
+![Proton runner](./assets/proton-ge-runner.png)
 
 You do not have to change any other runner options and can leave the default values.
 
 You do however have to edit the system options.
 Select the system options, toggle the `Advanced` switch, scroll down and add an environment variable.
 
-![./assets/system-env.png]
+![Environment variable](./assets/system-env.png)
+
+## Lutris installation
+
+The following steps are automated using the `w3c.yaml` [script](./w3c.yaml).
+The script may work, however it tends to get stuck waiting for lingering processes to finish.
+For that reason, I will demonstrate the manual method.
+
+### Creating a Lutris Game
+
+First, we create a simple lutris game, without any configuration yet.
+
+Press the plus button in the upper left corner, then select `Add locally installed game`.
+
+![Add game](./assets/add-game.png)
+
+Set any name for the game, we will use `W3Champions`. Select the wine runner for the game.
+
+![Add game runner](./assets/add-game-runner.png)
+
+Then in the game options, select the wineprefix. We will use `~/Games/W3Champions`.
+
+![Add game prefix](./assets/add-game-prefix.png)
+
+And click Save.
+
+It should create the game as follows.
+
+![Game](./assets/game.png)
+
+Clicking on the game once, we can select to run an EXE inside that prefix.
+We will use this function to install three different installers. First, we install the WebView2 runtime.
 
 ## Useful Links
 
 - [Official W3Champions Website](https://www.w3champions.com)
 - [Lutris](https://lutris.net)
 - [WineHQ](https://www.winehq.org)
-- [W3Champions Discord](https://www.winehq.org)
+- [W3Champions Discord](https://discord.gg/uJmQxG2)
 
-Happy gaming! 🎮
+Happy ladder climbing! 🎮
