@@ -15,6 +15,8 @@ This guide will walk you through installing and running it on your system.
 
 ---
 
+Other distributions may work as well, but Arch Linux has yielded the most success so far, so the guide will focus on it.
+
 ## Prerequisites
 
 Before installing W3Champions, ensure you have the following:
@@ -152,8 +154,75 @@ It should create the game as follows.
 
 ![Game](./assets/game.png)
 
-Clicking on the game once, we can select to run an EXE inside that prefix.
-We will use this function to install three different installers. First, we install the WebView2 runtime.
+### Installing WebView2
+
+First, we install the WebView2 runtime.
+
+The installer can be downloaded from [here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/?ch=1&form=MA13LH#download).
+
+Select the `Evergreen Standalone Installer` for the `x64` architecture.
+
+You can also download the installer using `curl`.
+
+    curl -L "https://go.microsoft.com/fwlink/?linkid=2124701" --output "$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+
+![WebView2 download](./assets/download-result-webview2.png)
+
+Before actually running the installer, make sure that no previous wine or proton process is still lingering.
+That would likely cause issues where the runner wouldnt start at all.
+Especially with proton you have to use the PROTON_VERB=run environment variable to have multiple proton processes running at the same time.
+You can kill the running processes by executing the following commands.
+
+```sh
+pkill wine
+pkill srt-bwrap
+pkill exe
+pkill Cr
+pkill main
+pkill Microsoft
+```
+
+Before running any executables in that prefix, also before each of the following steps,
+you should always make sure that the potentially lingering processes are killed.
+
+Then, left-clicking on the game in lutris once, we can select to run an EXE inside that prefix.
+
+![Run EXE](./assets/run-exe.png)
+
+Select the recently downloaded WebView2 runtime installer.
+
+![Install WebView2](./assets/install-webview2.png)
+
+It may take a minute until the WebView2 installer opens up.
+It will download the runtime and then install.
+No interaction is required for this step.
+If the installer closes without any popup or feedback, then it installed successfully. Congrats!
+If not, and an error like 0x8003007 appears, then something in the previous steps was not done correctly and you would have to start over.
+
+### Enabling msedgewebview2.exe compability
+
+> [!IMPORTANT]  
+> You have to set the `msedgewebview2.exe` to Windows 7.
+> If you do not do this, all windows running with WebView2 will be just black and unusable.
+
+Select the game, and click on the `Wine configuration` option. It will open `winecfg`.
+In there, look for `msedgewebview2.exe`. It will be set to Windows 8.1 by default. This will render all windows black.
+
+![msedgewebview2.exe](./assets/msedgewebview2.exe.png)
+
+Set the version to Windows 7.
+
+![msedgewebview2.exe](./assets/msedgewebview2-7.exe.png)
+
+Click Apply and OK.
+
+### Installing Battle.net
+
+### Installing Warcraft III: Reforged
+
+### Installing W3Champions
+
+### Postinstallation Steps
 
 ## Useful Links
 
