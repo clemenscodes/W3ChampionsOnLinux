@@ -160,6 +160,8 @@ First, we install the WebView2 runtime.
 
 The installer can be downloaded from [here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/?ch=1&form=MA13LH#download).
 
+![Download WebView2](./assets/download-webview2.png)
+
 Select the `Evergreen Standalone Installer` for the `x64` architecture.
 
 You can also download the installer using `curl`.
