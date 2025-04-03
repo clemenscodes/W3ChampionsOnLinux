@@ -210,11 +210,11 @@ If not, and an error like 0x8003007 appears, then something in the previous step
 Select the game, and click on the `Wine configuration` option. It will open `winecfg`.
 In there, look for `msedgewebview2.exe`. It will be set to Windows 8.1 by default. This will render all windows black.
 
-![msedgewebview2.exe](./assets/msedgewebview2.exe.png)
+![msedgewebview2.exe](./assets/msdefault.png)
 
 Set the version to Windows 7.
 
-![msedgewebview2.exe](./assets/msedgewebview2-7.exe.png)
+![msedgewebview2.exe](./assets/ms7.png)
 
 Click Apply and OK.
 
