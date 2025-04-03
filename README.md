@@ -176,6 +176,7 @@ Especially with proton you have to use the PROTON_VERB=run environment variable 
 You can kill the running processes by executing the following commands.
 
 ```sh
+pkill lutris
 pkill wine
 pkill srt-bwrap
 pkill exe
@@ -201,7 +202,7 @@ No interaction is required for this step.
 If the installer closes without any popup or feedback, then it installed successfully. Congrats!
 If not, and an error like 0x8003007 appears, then something in the previous steps was not done correctly and you would have to start over.
 
-### Enabling msedgewebview2.exe compability
+### Enabling msedgewebview2.exe compatibility
 
 > [!IMPORTANT]  
 > You have to set the `msedgewebview2.exe` to Windows 7.
