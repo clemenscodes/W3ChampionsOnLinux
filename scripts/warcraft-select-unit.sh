@@ -31,62 +31,50 @@ case "$SELECTED_UNIT" in
 1)
   X=$((SCREEN_WIDTH * 811 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 915 / SCREEN_HEIGHT))
-  return
   ;;
 2)
   X=$((SCREEN_WIDTH * 870 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 915 / SCREEN_HEIGHT))
-  return
   ;;
 3)
   X=$((SCREEN_WIDTH * 923 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 915 / SCREEN_HEIGHT))
-  return
   ;;
 4)
   X=$((SCREEN_WIDTH * 979 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 915 / SCREEN_HEIGHT))
-  return
   ;;
 5)
   X=$((SCREEN_WIDTH * 1032 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 915 / SCREEN_HEIGHT))
-  return
   ;;
 6)
   X=$((SCREEN_WIDTH * 1089 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 915 / SCREEN_HEIGHT))
-  return
   ;;
 7)
   X=$((SCREEN_WIDTH * 811 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 1000 / SCREEN_HEIGHT))
-  return
   ;;
 8)
   X=$((SCREEN_WIDTH * 870 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 1000 / SCREEN_HEIGHT))
-  return
   ;;
 9)
   X=$((SCREEN_WIDTH * 923 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 1000 / SCREEN_HEIGHT))
-  return
   ;;
 10)
   X=$((SCREEN_WIDTH * 979 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 1000 / SCREEN_HEIGHT))
-  return
   ;;
 11)
   X=$((SCREEN_WIDTH * 1032 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 1000 / SCREEN_HEIGHT))
-  return
   ;;
 12)
   X=$((SCREEN_WIDTH * 1089 / SCREEN_WIDTH))
   Y=$((SCREEN_HEIGHT * 1000 / SCREEN_HEIGHT))
-  return
   ;;
 esac
 

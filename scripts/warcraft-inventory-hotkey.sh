@@ -30,27 +30,27 @@ MOUSE_Y=$(echo "$MOUSE_POS" | cut -d' ' -f2)
 case "$HOTKEY" in
 1)
   X=$((SCREEN_WIDTH * 79 / 128))
-  Y=$((SCREEN_HEIGHT * 89 / 108)) return
+  Y=$((SCREEN_HEIGHT * 89 / 108))
   ;;
 2)
   X=$((SCREEN_WIDTH * 21 / 32))
-  Y=$((SCREEN_HEIGHT * 89 / 108)) return
+  Y=$((SCREEN_HEIGHT * 89 / 108))
   ;;
 3)
   X=$((SCREEN_WIDTH * 79 / 128))
-  Y=$((SCREEN_HEIGHT * 8 / 9)) return
+  Y=$((SCREEN_HEIGHT * 8 / 9))
   ;;
 4)
   X=$((SCREEN_WIDTH * 21 / 32))
-  Y=$((SCREEN_HEIGHT * 8 / 9)) return
+  Y=$((SCREEN_HEIGHT * 8 / 9))
   ;;
 5)
   X=$((SCREEN_WIDTH * 79 / 128))
-  Y=$((SCREEN_HEIGHT * 205 / 216)) return
+  Y=$((SCREEN_HEIGHT * 205 / 216))
   ;;
 6)
   X=$((SCREEN_WIDTH * 21 / 32))
-  Y=$((SCREEN_HEIGHT * 205 / 216)) return
+  Y=$((SCREEN_HEIGHT * 205 / 216))
   ;;
 esac
 

@@ -30,51 +30,51 @@ MOUSE_Y=$(echo "$MOUSE_POS" | cut -d' ' -f2)
 case "$HOTKEY" in
 Q)
   X=$((SCREEN_WIDTH * 72 / 100))
-  Y=$((SCREEN_HEIGHT * 80 / 100)) return
+  Y=$((SCREEN_HEIGHT * 80 / 100))
   ;;
 W)
   X=$((SCREEN_WIDTH * 76 / 100))
-  Y=$((SCREEN_HEIGHT * 80 / 100)) return
+  Y=$((SCREEN_HEIGHT * 80 / 100))
   ;;
 E)
   X=$((SCREEN_WIDTH * 80 / 100))
-  Y=$((SCREEN_HEIGHT * 80 / 100)) return
+  Y=$((SCREEN_HEIGHT * 80 / 100))
   ;;
 R)
   X=$((SCREEN_WIDTH * 84 / 100))
-  Y=$((SCREEN_HEIGHT * 80 / 100)) return
+  Y=$((SCREEN_HEIGHT * 80 / 100))
   ;;
 A)
   X=$((SCREEN_WIDTH * 72 / 100))
-  Y=$((SCREEN_HEIGHT * 87 / 100)) return
+  Y=$((SCREEN_HEIGHT * 87 / 100))
   ;;
 S)
   X=$((SCREEN_WIDTH * 76 / 100))
-  Y=$((SCREEN_HEIGHT * 87 / 100)) return
+  Y=$((SCREEN_HEIGHT * 87 / 100))
   ;;
 D)
   X=$((SCREEN_WIDTH * 80 / 100))
-  Y=$((SCREEN_HEIGHT * 87 / 100)) return
+  Y=$((SCREEN_HEIGHT * 87 / 100))
   ;;
 F)
   X=$((SCREEN_WIDTH * 84 / 100))
-  Y=$((SCREEN_HEIGHT * 87 / 100)) return
+  Y=$((SCREEN_HEIGHT * 87 / 100))
   ;;
 Y)
   X=$((SCREEN_WIDTH * 72 / 100))
-  Y=$((SCREEN_HEIGHT * 94 / 100)) return
+  Y=$((SCREEN_HEIGHT * 94 / 100))
   ;;
 X)
   X=$((SCREEN_WIDTH * 76 / 100))
-  Y=$((SCREEN_HEIGHT * 94 / 100)) return
+  Y=$((SCREEN_HEIGHT * 94 / 100))
   ;;
 C)
   X=$((SCREEN_WIDTH * 80 / 100))
-  Y=$((SCREEN_HEIGHT * 94 / 100)) return
+  Y=$((SCREEN_HEIGHT * 94 / 100))
   ;;
 V)
   X=$((SCREEN_WIDTH * 84 / 100))
-  Y=$((SCREEN_HEIGHT * 94 / 100)) return
+  Y=$((SCREEN_HEIGHT * 94 / 100))
   ;;
 esac
 
