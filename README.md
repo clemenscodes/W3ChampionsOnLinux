@@ -15,6 +15,16 @@ This guide will walk you through installing and running it on your system.
 
 ---
 
+## Supported Runners
+
+| Runner | Compatibility          |
+| ------------ | ---------------------- |
+| Proton-GE   | ✅ Supported           |
+| wine-staging |✅ Supported |
+| Other        | ❌ Not Confirmed       |
+
+---
+
 Other distributions may work as well, but Arch Linux has yielded the most success so far, so the guide will focus on it.
 
 ## Prerequisites
@@ -22,7 +32,7 @@ Other distributions may work as well, but Arch Linux has yielded the most succes
 Before installing W3Champions, ensure you have the following:
 
 - A valid **Warcraft III: Reforged** installation (through Battle.net).
-- **Proton-GE (Latest, at least 9-26)** installed.
+- **Proton-GE (Latest, at least 9-26)** installed, or wine-staging (latest).
 - **Lutris** for managing the installation.
 - A **Vulkan-capable GPU**.
 - The **latest Mesa drivers** installed.
