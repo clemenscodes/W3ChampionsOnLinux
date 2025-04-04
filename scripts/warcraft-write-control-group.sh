@@ -21,7 +21,7 @@ case "$CONTROL_GROUP" in
 esac
 
 echo "Selecting control group $CONTROL_GROUP" >>"$YDOTOOL_LOG_FILE"
-echo "Writing control group keycode" >>"YDOTOOL_LOG_FILE"
+echo "Writing control group keycode" >>"$YDOTOOL_LOG_FILE"
 echo "$CONTROL_GROUP_KEYCODE" >"$WARCRAFT_HOME/control_group_keycode"
 
 sleep 0.1
