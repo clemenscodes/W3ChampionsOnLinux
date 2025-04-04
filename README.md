@@ -261,6 +261,7 @@ This step breaks most of the times. We still don't quite understand what exactly
 Pressing Sign In will likely cause the launcher to crash.
 However, it can work. Starting the launcher, then starting Battle.net, then resetting the Battle.net state can help.
 Pressing Sign In may render the Blizzard Auth UI. Sometimes just trying a few times also works.
+Rebooting and then running W3Champions first also sometimes helps.
 If it simply won't work even after a few tries, there is still a method to Sign In, however it is a real PITA.
 
 #### Bypassing the W3Champions Sign In
