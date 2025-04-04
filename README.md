@@ -326,6 +326,7 @@ However the W3Champions Launcher will have sound and running matches will have t
 ### Mouse cursor disappears
 
 When the mouse disappears, switching the workspaces while moving the mouse tends to rerender the mouse on top of the W3Champions Launcher window.
+As a last resort, you can use a virtual desktop in wine. In the virtual desktop the cursor will be rendered properly at all times.
 On Hyprland, setting the windowrules can help.
 
 ```hyprlang
