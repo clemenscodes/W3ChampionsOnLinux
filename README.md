@@ -305,6 +305,88 @@ Then select that file as the game executable in lutris.
 
 This will make W3Champions pass the LAN test and you are ready to climb the ladder on linux.
 
+## Known issues
+
+### No sound with Proton-GE in W3Champions Launcher
+
+No fix found yet. Use wine-staging instead. 
+With wine-staging, the Blizzard Browser will be just black and only the cursor will be visible as well as sound will be playing. 
+However the W3Champions Launcher will have sound and running matches will have the top menu displayed.
+
+### Mouse cursor disappears
+
+When the mouse disappears, switching the workspaces while moving the mouse tends to rerender the mouse on top of the W3Champions Launcher window.
+On Hyprland, setting the windowrules can help.
+
+```hyprlang
+windowrule = content game,class:(steam_app_default),title:()
+windowrule = content game,class:(steam_app_default),title:(Battle.net)
+windowrule = content game,class:(steam_app_default),title:(W3Champions)
+windowrule = content game,class:(steam_app_default),title:(Warcraft III)
+windowrule = content game,class:(explorer.exe),title:()
+windowrule = content game,class:(battle.net.exe),title:(Battle.net)
+windowrule = content game,class:(w3champions.exe),title:(W3Champions)
+windowrule = content game,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = workspace 2,class:(steam_app_default),title:(Battle.net)
+windowrule = workspace 3,class:(steam_app_default),title:()
+windowrule = workspace 3,class:(steam_app_default),title:(W3Champions)
+windowrule = workspace 4,class:(steam_app_default),title:(Warcraft III)
+windowrule = workspace 2,class:(battle.net.exe),title:(Battle.net)    
+windowrule = workspace 3,class:(explorer.exe),title:()                
+windowrule = workspace 3,class:(w3champions.exe),title:(W3Champions)  
+windowrule = workspace 4,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = tile,class:(steam_app_default),title:(Battle.net)
+windowrule = tile,class:(steam_app_default),title:(W3Champions)
+windowrule = tile,class:(steam_app_default),title:(Warcraft III)
+windowrule = tile,class:(battle.net.exe),title:(Battle.net)    
+windowrule = tile,class:(w3champions.exe),title:(W3Champions)  
+windowrule = tile,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = stayfocused,class:(steam_app_default),title:(Warcraft III)
+windowrule = stayfocused,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = stayfocused,class:(steam_app_default),title:(W3Champions)
+windowrule = stayfocused,class:(w3champions.exe),title:(W3Champions)  
+windowrule = noinitialfocus,class:(steam_app_default),title:()
+windowrule = noinitialfocus,class:(steam_app_default),title:(Warcraft III)
+windowrule = noinitialfocus,class:(explorer.exe),title:()
+windowrule = noinitialfocus,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = move 47% 96%,class:(steam_app_default),title:()
+windowrule = move 47% 96%,class:(explorer.exe),title:()
+windowrule = opacity 0%,class:(steam_app_default),title:()
+windowrule = opacity 0%,class:(explorer.exe),title:()
+```
+
+Alternatively, running this script to restart W3Champions can make the hassle a little bit less hassle.
+
+```bash
+#!/usr/bin/env bash
+
+notify-send "Starting W3Champions"
+
+pkill main || true
+pkill Warcraft || true
+pkill wine || true
+pkill Microsoft || true
+pkill srt-bwrap || true
+pkill exe || true
+pkill Cr || true
+pkill mDNS || true
+
+sleep 2
+
+pkill main || true
+pkill Warcraft || true
+pkill wine || true
+pkill Microsoft || true
+pkill srt-bwrap || true
+pkill exe || true
+pkill Cr || true
+pkill mDNS || true
+
+sleep 2
+
+LUTRIS_SKIP_INIT=1 lutris lutris:rungameid/3 & # you can find the game id using `lutris -l`
+```
+
 ## Discord
 
 - [W3Champions Discord](https://discord.gg/uJmQxG2)
