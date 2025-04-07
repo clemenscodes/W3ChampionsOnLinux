@@ -309,7 +309,7 @@ sfx=1
 sfxvolume=50
 subtitles=1
 unit=1
-windowfocus=1
+windowfocus=0
 
 [String]
 gamemodePreferred=1v1
