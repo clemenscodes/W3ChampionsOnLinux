@@ -16,11 +16,22 @@
       runtimeInputs = [
         pkgs.curl
         pkgs.umu-launcher
+        pkgs.zenity
       ];
       text = ''
         export PROTON_VERB=run
-        export WINEARCH=win64
-        export WINEPREFIX="$HOME/Games/W3Champions"
+        export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
+        export PROTONFIXES_DISABLE=0
+        export UMU_LOG=0
+        export UMU_ZENITY=1
+        export UMU_RUNTIME_UPDATE=1
+        export STORE=none
+        export GAMEID=w3champions
+
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
+        export WINEPREFIX=$HOME/Games/W3Champions
+
         export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
         export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
         export WEBVIEW2_SETUP_EXE="$DOWNLOADS/MicrosoftEdgeWebview2Setup.exe"
@@ -33,14 +44,83 @@
             mkdir -p "$DOWNLOADS"
             curl -L "$WEBVIEW2_URL" -o "$WEBVIEW2_SETUP_EXE"
           fi
+
           echo "Installing WebView2 runtime... sit back and wait until it finishes."
           echo "There should be no errors."
           echo "If an error occurs, you might have an incompatible GPU or Vulkan driver."
-          umu-run "$WEBVIEW2_SETUP_EXE"
+          umu-run "$WEBVIEW2_SETUP_EXE" &
+          INSTALL_PID="$!"
+
+          (
+            set +e
+            while true; do
+              microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+              if [ "$microsoft_process_count" -gt 1 ]; then
+                echo "Waiting for WebView2 installation to finish..."
+                sleep 1
+                while true; do
+                  microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+                  if [ "$microsoft_process_count" -eq 1 ]; then
+                    pkill Microsoft || true
+                    pkill edge || true
+                    break
+                  fi
+                done
+                break
+              fi
+              sleep 1
+            done
+          ) &
+
+          WATCHDOG_PID=$!
+
+          wait "$INSTALL_PID"
+          INSTALL_EXIT_CODE="$?"
+
+          wait "$WATCHDOG_PID"
+
+          if [ "$INSTALL_EXIT_CODE" -ne 0 ]; then
+            echo "WebView2 installer failed with exit code $INSTALL_EXIT_CODE"
+            exit 1
+          fi
+
+          if [ ! -d "$WEBVIEW2_HOME" ]; then
+            echo "Failed installing WebView2 runtime... you might have the wrong Proton-GE version installed."
+            echo "Recommended is at least Proton-GE-9-26".
+            exit 1
+          fi
+
+          if [ ! -d "$WEBVIEW2_HOME" ]; then
+            echo "Failed installing WebView2 runtime... you might have the wrong Proton-GE version installed."
+            echo "Recommended is at least Proton-GE-9-26".
+            exit 1
+          fi
+
           echo "Finished installing WebView2 runtime"
+
           echo "Fixing black screens for windows using the WebView2 runtime..."
           echo "Setting msedgewebview2.exe to Windows 7..."
-          umu-run "$WINEPREFIX/drive_c/windows/regedit.exe" /S "${self}/msedgewebview2.exe.reg"
+
+          (
+            set +e
+            while true; do
+              microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+              if [ "$microsoft_process_count" -gt 0 ]; then
+                pkill Microsoft || true
+                break
+              fi
+              sleep 1
+            done
+          ) &
+
+          WATCHDOG_PID=$!
+
+          umu-run "$WINEPREFIX/drive_c/windows/regedit.exe" /S "${self}/msedgewebview2.exe.reg" &
+          REGEDIT_PID="$!"
+
+          wait "$REGEDIT_PID"
+          wait "$WATCHDOG_PID"
+
           echo "Done. WebView2 applications should render properly now."
           echo "If they are rendered black, repeat this step and check your GPU."
         fi
@@ -51,12 +131,23 @@
       runtimeInputs = [
         pkgs.curl
         pkgs.umu-launcher
+        pkgs.zenity
       ];
       text = ''
         export PROTON_VERB=run
-        export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
-        export WINEARCH=win64
+        export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
+        export PROTONFIXES_DISABLE=0
+        export UMU_LOG=0
+        export UMU_ZENITY=1
+        export UMU_RUNTIME_UPDATE=1
+        export STORE=none
+        export GAMEID=w3champions
+
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
         export WINEPREFIX=$HOME/Games/W3Champions
+
+        export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
         export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
         export BNET_EXE="$PROGRAM_FILES86/Battle.net/Battle.net.exe"
         export BNET_SETUP_EXE="$DOWNLOADS/BattleNet-Setup.exe"
@@ -68,10 +159,36 @@
             mkdir -p "$DOWNLOADS"
             curl -L "$BATTLENET_URL" -o "$BNET_SETUP_EXE"
           fi
+
+          (
+            set +e
+            while true; do
+              microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+              if [ "$microsoft_process_count" -gt 0 ]; then
+                pkill Microsoft || true
+                break
+              fi
+              sleep 1
+            done
+          ) &
+
+          WATCHDOG_PID=$!
+
           echo "Installing Battle.net..."
-          umu-run "$BNET_SETUP_EXE"
+          echo "Run Warcraft III at least once before you start W3Champions."
+          echo "Then close Warcraft III and Battle.net to proceed."
+          umu-run "$BNET_SETUP_EXE" &
+          BATTLE_NET_PID="$!"
+
+          wait "$BATTLE_NET_PID"
+          wait "$WATCHDOG_PID"
+
+          if [ ! -f "$BNET_EXE" ]; then
+            echo "Failed installing Battle.net."
+            exit 1
+          fi
+
           echo "Finished installing Battle.net."
-          echo "Run Warcraft III at least once before you proceed."
         fi
       '';
     };
@@ -80,11 +197,22 @@
       runtimeInputs = [
         pkgs.curl
         pkgs.umu-launcher
+        pkgs.zenity
       ];
       text = ''
         export PROTON_VERB=run
-        export WINEARCH=win64
+        export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
+        export PROTONFIXES_DISABLE=0
+        export UMU_LOG=0
+        export UMU_ZENITY=1
+        export UMU_RUNTIME_UPDATE=1
+        export STORE=none
+        export GAMEID=w3champions
+
         export WINEPREFIX=$HOME/Games/W3Champions
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
+
         export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
         export PROGRAM_FILES="$WINEPREFIX/drive_c/Program Files"
         export W3C_EXE="$PROGRAM_FILES/W3Champions/W3Champions.exe"
@@ -97,9 +225,34 @@
             mkdir -p "$DOWNLOADS"
             curl -L "$W3C_SETUP_URL" -o "$W3C_SETUP_MSI"
           fi
+
+          (
+            set +e
+            while true; do
+              microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+              if [ "$microsoft_process_count" -gt 0 ]; then
+                pkill Microsoft || true
+                break
+              fi
+              sleep 1
+            done
+          ) &
+
+          WATCHDOG_PID=$!
+
           echo "Installing W3Champions..."
           echo "Do not launch W3Champions after the installation finishes."
-          umu-run "$W3C_SETUP_MSI"
+          umu-run "$W3C_SETUP_MSI" &
+          W3C_PID="$!"
+
+          wait "$W3C_PID"
+          wait "$WATCHDOG_PID"
+
+          if [ ! -f "$W3C_EXE" ]; then
+            echo "Failed installing W3Champions."
+            exit 1
+          fi
+
           echo "Finished installing W3Champions."
         fi
       '';
@@ -109,11 +262,22 @@
       runtimeInputs = [
         pkgs.curl
         pkgs.umu-launcher
+        pkgs.zenity
       ];
       text = ''
         export PROTON_VERB=run
-        export WINEARCH=win64
+        export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
+        export PROTONFIXES_DISABLE=0
+        export UMU_LOG=0
+        export UMU_ZENITY=1
+        export UMU_RUNTIME_UPDATE=1
+        export STORE=none
+        export GAMEID=w3champions
+
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
         export WINEPREFIX=$HOME/Games/W3Champions
+
         export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
         export APPDATA="$WINEPREFIX/drive_c/users/$USER/AppData"
         export APPDATA_LOCAL="$APPDATA/Local"
@@ -127,25 +291,45 @@
             mkdir -p "$DOWNLOADS"
             curl -L "$W3C_LEGACY_SETUP_URL" -o "$W3C_LEGACY_SETUP_EXE"
           fi
+
           echo "Installing legacy W3Champions..."
           umu-run "$W3C_LEGACY_SETUP_EXE"
+
+          if [ ! -f "$W3C_LEGACY_EXE" ]; then
+            echo "Failed installing legacy W3Champions."
+            exit 1
+          fi
+
           echo "Finished installing legacy W3Champions."
         fi
       '';
     };
     bonjour = pkgs.writeShellApplication {
       name = "bonjour";
-      runtimeInputs = [pkgs.umu-launcher];
+      runtimeInputs = [
+        pkgs.umu-launcher
+        pkgs.zenity
+      ];
       text = ''
-        export WINEARCH=win64
+        export PROTON_VERB=run
+        export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
+        export PROTONFIXES_DISABLE=0
+        export UMU_LOG=0
+        export UMU_ZENITY=1
+        export UMU_RUNTIME_UPDATE=1
+        export STORE=none
+        export GAMEID=w3champions
+
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
         export WINEPREFIX=$HOME/Games/W3Champions
 
         umu-run "$WINEPREFIX/drive_c/windows/system32/net.exe" stop 'Bonjour Service'
         umu-run "$WINEPREFIX/drive_c/windows/system32/net.exe" start 'Bonjour Service'
       '';
     };
-    warcraft = pkgs.writeShellApplication {
-      name = "warcraft";
+    install-warcraft = pkgs.writeShellApplication {
+      name = "install-warcraft";
       runtimeInputs = [
         pkgs.curl
         pkgs.umu-launcher
@@ -156,11 +340,17 @@
       ];
       text = ''
         export PROTON_VERB=run
+        export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
+        export PROTONFIXES_DISABLE=0
+        export UMU_LOG=0
+        export UMU_ZENITY=1
+        export UMU_RUNTIME_UPDATE=1
+        export STORE=none
+        export GAMEID=w3champions
 
-        export WINEPATH="$HOME/Games"
-        export WINEPREFIX="$WINEPATH/W3Champions"
         export WINEARCH="win64"
         export WINEDEBUG="-all"
+        export WINEPREFIX=$HOME/Games/W3Champions
 
         export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
         export DOCUMENTS="$WINEPREFIX/drive_c/users/$USER/Documents"
@@ -200,6 +390,8 @@
 
         if [ ! -d "$WARCRAFT_HOME" ]; then
           echo "Warcraft III is not installed..."
+          echo "You can provide the installer with an existing Warcraft III installation."
+          echo "Pass WARCRAFT_HOME environment variable to the script pointing to an existing install of Warcraft III."
           if [ -n "$WARCRAFT_PATH" ]; then
             echo "Copying $WARCRAFT_PATH to $WARCRAFT_HOME"
             cp -r "$WARCRAFT_PATH" "$WARCRAFT_HOME"
@@ -212,6 +404,53 @@
         w3champions
       '';
     };
+    warcraft = pkgs.writeShellApplication {
+      name = "warcraft";
+      runtimeInputs = [
+        install-warcraft
+        pkgs.umu-launcher
+      ];
+      text = ''
+        export PROTON_VERB=run
+        export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
+        export PROTONFIXES_DISABLE=0
+        export UMU_LOG=0
+        export UMU_ZENITY=1
+        export UMU_RUNTIME_UPDATE=1
+        export STORE=none
+        export GAMEID=w3champions
+
+        export WINEPATH="$HOME/Games"
+        export WINEPREFIX="$WINEPATH/W3Champions"
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
+
+        export PROGRAM_FILES="$WINEPREFIX/drive_c/Program Files"
+        export W3C_EXE="$PROGRAM_FILES/W3Champions/W3Champions.exe"
+
+        install-warcraft
+
+        (
+          set +e
+          while true; do
+            microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+            if [ "$microsoft_process_count" -gt 0 ]; then
+              pkill Microsoft || true
+            fi
+            sleep 1
+          done
+        ) &
+
+        WATCHDOG_PID=$!
+
+        echo "Running W3Champions..."
+        umu-run "$W3C_EXE" &
+        W3C_PID="$!"
+
+        wait "$W3C_PID"
+        wait "$WATCHDOG_PID"
+      '';
+    };
   in {
     packages = {
       ${system} = {
@@ -221,6 +460,7 @@
           w3champions
           w3champions-legacy
           bonjour
+          install-warcraft
           warcraft
           ;
         default = self.packages.${system}.warcraft;
@@ -235,6 +475,7 @@
             w3champions
             w3champions-legacy
             bonjour
+            install-warcraft
             warcraft
           ];
           nativeBuildInputs = [
@@ -243,6 +484,13 @@
           ];
           shellHook = ''
             export PROTON_VERB=run
+            export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
+            export PROTONFIXES_DISABLE=0
+            export UMU_LOG=0
+            export UMU_ZENITY=1
+            export UMU_RUNTIME_UPDATE=1
+            export STORE=none
+            export GAMEID=w3champions
 
             export WINEPATH="$HOME/Games"
             export WINEPREFIX="$WINEPATH/W3Champions"
