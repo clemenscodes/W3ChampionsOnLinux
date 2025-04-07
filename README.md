@@ -2,30 +2,19 @@
 
 W3Champions, the competitive ladder and matchmaking platform for Warcraft III, is now working on Linux!
 This guide will walk you through installing and running it on your system.
-
----
-
-## Supported Systems
-
-| Distribution | Compatibility          |
-| ------------ | ---------------------- |
-| Arch Linux   | ✅ Supported           |
-| Nobara 41    | ⚠ Partially Supported |
-| Other        | ❌ Not Confirmed       |
+Using Nix, the installation will be as simple as running `nix run github:clemenscodes/W3ChampionsOnLinux`.
 
 ---
 
 ## Supported Runners
 
-| Runner | Compatibility          |
-| ------------ | ---------------------- |
-| Proton-GE   | ✅ Supported           |
-| wine-staging |✅ Supported |
-| Other        | ❌ Not Confirmed       |
+| Runner       | Compatibility    |
+| ------------ | ---------------- |
+| Proton-GE    | ✅ Supported     |
+| wine-staging | ✅ Supported     |
+| Other        | ❌ Not Confirmed |
 
 ---
-
-Other distributions may work as well, but Arch Linux has yielded the most success so far, so the guide will focus on it.
 
 ## Prerequisites
 
@@ -40,7 +29,11 @@ Before installing W3Champions, ensure you have the following:
 
 ---
 
-## Arch Linux
+## Installation
+
+> [!NOTE]  
+> This guide will focus on _Arch Linux_, since it has yielded the most success so far.  
+> Other distributions work as well, just check for your distributions package manager how to install the required packages.
 
 First, enable multilib (32-bit support).
 
@@ -186,13 +179,9 @@ Especially with proton you have to use the PROTON_VERB=run environment variable 
 You can kill the running processes by executing the following commands.
 
 ```sh
-pkill lutris
-pkill wine
-pkill srt-bwrap
-pkill exe
-pkill Cr
-pkill main
-pkill Microsoft
+for proc in lutris main Warcraft wine Microsoft srt-bwrap exe Cr mDNS; do
+  pkill "$proc" || true
+done
 ```
 
 Before running any executables in that prefix, also before each of the following steps,
@@ -317,15 +306,18 @@ This will make W3Champions pass the LAN test and you are ready to climb the ladd
 
 ## Known issues
 
-### No sound with Proton-GE in W3Champions Launcher
+### W3Champions can not verify Warcraft III with Battle.net
 
-No fix found yet. Use wine-staging instead. 
-With wine-staging, the Blizzard Browser will be just black and only the cursor will be visible as well as sound will be playing. 
-However the W3Champions Launcher will have sound and running matches will have the top menu displayed.
+If you never played W3Champions before, you may have to verify your Warcraft III installation.
+For this, you should download the legacy launcher from the w3champions GitHub release page [here](https://github.com/w3champions/launcher/releases),
+execute that executable inside the prefix. Install it, then run it.
+You should be able to then click play on the legacy launcher
+and have it start Warcraft through Battle.net and verify your Warcraft.
 
 ### Mouse cursor disappears
 
 When the mouse disappears, switching the workspaces while moving the mouse tends to rerender the mouse on top of the W3Champions Launcher window.
+Preventing the window manager from decorating the Warcraft and W3Champions windows can help.
 As a last resort, you can use a virtual desktop in wine. In the virtual desktop the cursor will be rendered properly at all times.
 On Hyprland, setting the windowrules can help.
 
@@ -342,20 +334,16 @@ windowrule = workspace 2,class:(steam_app_default),title:(Battle.net)
 windowrule = workspace 3,class:(steam_app_default),title:()
 windowrule = workspace 3,class:(steam_app_default),title:(W3Champions)
 windowrule = workspace 4,class:(steam_app_default),title:(Warcraft III)
-windowrule = workspace 2,class:(battle.net.exe),title:(Battle.net)    
-windowrule = workspace 3,class:(explorer.exe),title:()                
-windowrule = workspace 3,class:(w3champions.exe),title:(W3Champions)  
+windowrule = workspace 2,class:(battle.net.exe),title:(Battle.net)
+windowrule = workspace 3,class:(explorer.exe),title:()
+windowrule = workspace 3,class:(w3champions.exe),title:(W3Champions)
 windowrule = workspace 4,class:(warcraft iii.exe),title:(Warcraft III)
 windowrule = tile,class:(steam_app_default),title:(Battle.net)
 windowrule = tile,class:(steam_app_default),title:(W3Champions)
 windowrule = tile,class:(steam_app_default),title:(Warcraft III)
-windowrule = tile,class:(battle.net.exe),title:(Battle.net)    
-windowrule = tile,class:(w3champions.exe),title:(W3Champions)  
+windowrule = tile,class:(battle.net.exe),title:(Battle.net)
+windowrule = tile,class:(w3champions.exe),title:(W3Champions)
 windowrule = tile,class:(warcraft iii.exe),title:(Warcraft III)
-windowrule = stayfocused,class:(steam_app_default),title:(Warcraft III)
-windowrule = stayfocused,class:(warcraft iii.exe),title:(Warcraft III)
-windowrule = stayfocused,class:(steam_app_default),title:(W3Champions)
-windowrule = stayfocused,class:(w3champions.exe),title:(W3Champions)  
 windowrule = noinitialfocus,class:(steam_app_default),title:()
 windowrule = noinitialfocus,class:(steam_app_default),title:(Warcraft III)
 windowrule = noinitialfocus,class:(explorer.exe),title:()
@@ -373,29 +361,31 @@ Alternatively, running this script to restart W3Champions can make the hassle a 
 
 notify-send "Starting W3Champions"
 
-pkill main || true
-pkill Warcraft || true
-pkill wine || true
-pkill Microsoft || true
-pkill srt-bwrap || true
-pkill exe || true
-pkill Cr || true
-pkill mDNS || true
+for proc in main Warcraft wine Microsoft srt-bwrap exe Cr mDNS; do
+  pkill "$proc" || true
+done
 
-sleep 2
+LUTRIS_SKIP_INIT=1 lutris lutris:rungame/w3champions & # you can find the game name using `lutris -l`
+```
 
-pkill main || true
-pkill Warcraft || true
-pkill wine || true
-pkill Microsoft || true
-pkill srt-bwrap || true
-pkill exe || true
-pkill Cr || true
-pkill mDNS || true
+### Flo won't connect on successive attempts on NixOS
 
-sleep 2
+Follow the guide from start to finish until the end, do not launch W3Champions.
+Backup the created wineprefix. Before any launch, copy the backup and run W3Champions from that freshly created backup.
+For some reason, some state inside the prefix after running W3Champions gets corrupted in a way that, on NixOS, the connection to Flo will not succeed anymore.
+A fresh prefix will work. So keep running from a fresh prefix.
+An example setup can be found [here](https://github.com/clemenscodes/cymenixos/blob/main/modules/gaming/w3champions/warcraft/default.nix).
 
-LUTRIS_SKIP_INIT=1 lutris lutris:rungameid/3 & # you can find the game id using `lutris -l`
+### Blackscreen / W3Champions not launching
+
+Ensure you have the environment variable `PROTON_VERB=run` set.
+If you ever switch runners inside the wineprefix, you may have to reinstall WebView2 and reset the msedgewebview2.exe back to Windows 7.
+Should the blackscreen persist, make sure to kill all lingering processes with this snippet.
+
+```bash
+for proc in lutris main Warcraft wine Microsoft srt-bwrap exe Cr mDNS; do
+  pkill "$proc" || true
+done
 ```
 
 ## Discord
