@@ -2,7 +2,6 @@
 
 W3Champions, the competitive ladder and matchmaking platform for Warcraft III, is now working on Linux!
 This guide will walk you through installing and running it on your system.
-Using Nix, the installation will be as simple as running `nix run github:clemenscodes/W3ChampionsOnLinux`.
 
 ---
 

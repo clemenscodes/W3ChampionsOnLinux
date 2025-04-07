@@ -10,7 +10,16 @@
     ...
   } @ inputs: let
     system = "x86_64-linux";
-    pkgs = import nixpkgs {inherit system;};
+    pkgs = import nixpkgs {
+      inherit system;
+      overlays = [
+        (final: prev: {
+          umu-launcher = prev.umu-launcher.override {
+            extraPkgs = pkgs: [];
+          };
+        })
+      ];
+    };
     webview2 = pkgs.writeShellApplication {
       name = "webview2";
       runtimeInputs = [
@@ -35,7 +44,7 @@
         export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
         export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
         export WEBVIEW2_SETUP_EXE="$DOWNLOADS/MicrosoftEdgeWebview2Setup.exe"
-        export WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeWebView/Application"
+        export WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeCore"
         export WEBVIEW2_URL="https://go.microsoft.com/fwlink/?linkid=2124703"
 
         if [ ! -d "$WEBVIEW2_HOME" ]; then
@@ -53,16 +62,15 @@
 
           (
             set +e
+            echo "Monitoring webview2 installation process..."
             while true; do
               microsoft_process_count=$(pgrep -la Microsoft | wc -l)
               if [ "$microsoft_process_count" -gt 1 ]; then
                 echo "Waiting for WebView2 installation to finish..."
-                sleep 1
                 while true; do
                   microsoft_process_count=$(pgrep -la Microsoft | wc -l)
                   if [ "$microsoft_process_count" -eq 1 ]; then
-                    pkill Microsoft || true
-                    pkill edge || true
+                    pkill MicrosoftEdgeUp || true
                     break
                   fi
                 done
@@ -365,7 +373,7 @@
         export WARCRAFT_CONFIG_HOME="$DOCUMENTS/Warcraft III"
 
         export WEBVIEW2_SETUP_EXE="$DOWNLOADS/MicrosoftEdgeWebview2Setup.exe"
-        export WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeWebView/Application"
+        export WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeCore"
         export WEBVIEW2_URL="https://go.microsoft.com/fwlink/?linkid=2124703"
 
         export BNET_SETUP_EXE="$DOWNLOADS/BattleNet-Setup.exe"
@@ -390,13 +398,14 @@
 
         if [ ! -d "$WARCRAFT_HOME" ]; then
           echo "Warcraft III is not installed..."
-          echo "You can provide the installer with an existing Warcraft III installation."
-          echo "Pass WARCRAFT_HOME environment variable to the script pointing to an existing install of Warcraft III."
           if [ -n "$WARCRAFT_PATH" ]; then
             echo "Copying $WARCRAFT_PATH to $WARCRAFT_HOME"
             cp -r "$WARCRAFT_PATH" "$WARCRAFT_HOME"
             rm -rf "$WARCRAFT_HOME/_retail_/webui" || true
             echo "Finished installing Warcraft III"
+          else
+            echo "You can provide the installer with an existing Warcraft III installation."
+            echo "Pass WARCRAFT_HOME environment variable to the script pointing to an existing install of Warcraft III."
           fi
         fi
 
@@ -509,7 +518,7 @@
             export WARCRAFT_CONFIG_HOME="$DOCUMENTS/Warcraft III"
 
             export WEBVIEW2_SETUP_EXE="$DOWNLOADS/MicrosoftEdgeWebview2Setup.exe"
-            export WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeWebView/Application"
+            export WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeCore"
             export WEBVIEW2_URL="https://go.microsoft.com/fwlink/?linkid=2124703"
 
             export BNET_SETUP_EXE="$DOWNLOADS/BattleNet-Setup.exe"
@@ -524,6 +533,8 @@
             export W3C_EXE="$PROGRAM_FILES/W3Champions/W3Champions.exe"
             export W3C_APPDATA="$APPDATA_LOCAL/com.w3champions.client"
             export W3C_URL="https://update-service.w3champions.com/api/launcher-e"
+
+            echo "NOTE: Warcraft III will not run when using umu-launcher. Blackscreen due to GPU crashes."
           '';
         };
       };
