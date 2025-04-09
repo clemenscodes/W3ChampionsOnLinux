@@ -3,6 +3,14 @@
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
     };
+    umu = {
+      url = "github:Open-Wine-Components/umu-launcher?dir=packaging/nix";
+      inputs = {
+        nixpkgs = {
+          follows = "nixpkgs";
+        };
+      };
+    };
   };
   outputs = {
     self,
@@ -14,8 +22,12 @@
       inherit system;
       overlays = [
         (final: prev: {
-          umu-launcher = prev.umu-launcher.override {
+          umu-launcher = inputs.umu.packages.${system}.default.override {
             extraPkgs = pkgs: [];
+            extraLibraries = pkgs: [];
+            withMultiArch = true;
+            withTruststore = true;
+            withDeltaUpdates = true;
           };
         })
       ];
@@ -30,10 +42,7 @@
       text = ''
         export PROTON_VERB=run
         export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-        export PROTONFIXES_DISABLE=0
         export UMU_LOG=0
-        export UMU_ZENITY=1
-        export UMU_RUNTIME_UPDATE=1
         export STORE=none
         export GAMEID=w3champions
 
@@ -69,8 +78,14 @@
                 echo "Waiting for WebView2 installation to finish..."
                 while true; do
                   microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+                  echo "Microsoft processes running: $microsoft_process_count"
                   if [ "$microsoft_process_count" -eq 1 ]; then
+                    echo "Killing all Microsoft processes"
                     pkill MicrosoftEdgeUp || true
+                    break
+                  fi
+                  sleep 1
+                  if [ "$microsoft_process_count" -eq 0 ]; then
                     break
                   fi
                 done
@@ -144,10 +159,7 @@
       text = ''
         export PROTON_VERB=run
         export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-        export PROTONFIXES_DISABLE=0
         export UMU_LOG=0
-        export UMU_ZENITY=1
-        export UMU_RUNTIME_UPDATE=1
         export STORE=none
         export GAMEID=w3champions
 
@@ -198,6 +210,8 @@
 
           echo "Finished installing Battle.net."
         fi
+
+        # Using cat to ensure the output is writeable, might break FLO connection if not
       '';
     };
     w3champions = pkgs.writeShellApplication {
@@ -210,10 +224,7 @@
       text = ''
         export PROTON_VERB=run
         export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-        export PROTONFIXES_DISABLE=0
         export UMU_LOG=0
-        export UMU_ZENITY=1
-        export UMU_RUNTIME_UPDATE=1
         export STORE=none
         export GAMEID=w3champions
 
@@ -226,6 +237,12 @@
         export W3C_EXE="$PROGRAM_FILES/W3Champions/W3Champions.exe"
         export W3C_SETUP_MSI="$DOWNLOADS/W3Champions_latest_x64_en-US.msi"
         export W3C_SETUP_URL="https://update-service.w3champions.com/api/launcher-e"
+
+        mkdir -p "$WARCRAFT_CONFIG_HOME"
+        mkdir -p "$WARCRAFT_CONFIG_HOME/CustomKeyBindings"
+
+        cat ${self}/War3Preferences.txt > "$WARCRAFT_CONFIG_HOME/War3Preferences.txt"
+        cat ${self}/CustomKeys.txt > "$WARCRAFT_CONFIG_HOME/CustomKeyBindings/CustomKeys.txt"
 
         if [ ! -f "$W3C_EXE" ]; then
           if [ ! -f "$W3C_SETUP_MSI" ]; then
@@ -263,6 +280,7 @@
 
           echo "Finished installing W3Champions."
         fi
+
       '';
     };
     w3champions-legacy = pkgs.writeShellApplication {
@@ -275,10 +293,7 @@
       text = ''
         export PROTON_VERB=run
         export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-        export PROTONFIXES_DISABLE=0
         export UMU_LOG=0
-        export UMU_ZENITY=1
-        export UMU_RUNTIME_UPDATE=1
         export STORE=none
         export GAMEID=w3champions
 
@@ -321,10 +336,7 @@
       text = ''
         export PROTON_VERB=run
         export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-        export PROTONFIXES_DISABLE=0
         export UMU_LOG=0
-        export UMU_ZENITY=1
-        export UMU_RUNTIME_UPDATE=1
         export STORE=none
         export GAMEID=w3champions
 
@@ -349,10 +361,7 @@
       text = ''
         export PROTON_VERB=run
         export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-        export PROTONFIXES_DISABLE=0
         export UMU_LOG=0
-        export UMU_ZENITY=1
-        export UMU_RUNTIME_UPDATE=1
         export STORE=none
         export GAMEID=w3champions
 
@@ -409,7 +418,7 @@
           fi
         fi
 
-        battlenet
+        # battlenet
         w3champions
       '';
     };
@@ -422,10 +431,7 @@
       text = ''
         export PROTON_VERB=run
         export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-        export PROTONFIXES_DISABLE=0
         export UMU_LOG=0
-        export UMU_ZENITY=1
-        export UMU_RUNTIME_UPDATE=1
         export STORE=none
         export GAMEID=w3champions
 
@@ -494,10 +500,7 @@
           shellHook = ''
             export PROTON_VERB=run
             export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-            export PROTONFIXES_DISABLE=0
             export UMU_LOG=0
-            export UMU_ZENITY=1
-            export UMU_RUNTIME_UPDATE=1
             export STORE=none
             export GAMEID=w3champions
 
