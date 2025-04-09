@@ -9,12 +9,11 @@
     pkgs.symlinkJoin {
       name = "warcraft-install-scripts";
       paths = with scripts; [
-        webview2
-        w3champions
-        w3champions-legacy
+        install-webview2
+        install-w3champions
+        install-w3champions-legacy
         bonjour
         install-warcraft
-        warcraft
         warcraft-copy
         warcraft-settings
         w3c-login-bypass

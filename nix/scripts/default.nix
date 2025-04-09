@@ -3,8 +3,8 @@
   pkgs,
   ...
 }: rec {
-  webview2 = pkgs.writeShellApplication {
-    name = "webview2";
+  install-webview2 = pkgs.writeShellApplication {
+    name = "install-webview2";
     runtimeInputs = [
       pkgs.curl
       pkgs.umu-launcher
@@ -110,8 +110,8 @@
       fi
     '';
   };
-  w3champions = pkgs.writeShellApplication {
-    name = "w3champions";
+  install-w3champions = pkgs.writeShellApplication {
+    name = "install-w3champions";
     runtimeInputs = [
       pkgs.curl
       pkgs.umu-launcher
@@ -167,8 +167,8 @@
       fi
     '';
   };
-  w3champions-legacy = pkgs.writeShellApplication {
-    name = "w3champions-legacy";
+  install-w3champions-legacy = pkgs.writeShellApplication {
+    name = "install-w3champions-legacy";
     runtimeInputs = [
       pkgs.curl
       pkgs.umu-launcher
@@ -227,11 +227,8 @@
   install-warcraft = pkgs.writeShellApplication {
     name = "install-warcraft";
     runtimeInputs = [
-      pkgs.curl
-      pkgs.umu-launcher
-      webview2
-      w3champions
-      bonjour
+      install-webview2
+      install-w3champions
     ];
     text = ''
       export PROTON_VERB=run
@@ -270,7 +267,7 @@
         mkdir -p "$WINEPREFIX"
       fi
 
-      webview2
+      install-webview2
 
       if [ ! -d "$WARCRAFT_HOME" ]; then
         echo "Warcraft III is not installed..."
@@ -285,47 +282,7 @@
         fi
       fi
 
-      w3champions
-    '';
-  };
-  warcraft = pkgs.writeShellApplication {
-    name = "warcraft";
-    runtimeInputs = [
-      pkgs.umu-launcher
-      install-warcraft
-    ];
-    text = ''
-      export PROTON_VERB=run
-
-      export WINEPATH="$HOME/Games"
-      export WINEPREFIX="$WINEPATH/W3Champions"
-      export WINEARCH="win64"
-      export WINEDEBUG="-all"
-
-      export PROGRAM_FILES="$WINEPREFIX/drive_c/Program Files"
-      export W3C_EXE="$PROGRAM_FILES/W3Champions/W3Champions.exe"
-
-      install-warcraft
-
-      (
-        set +e
-        while true; do
-          microsoft_process_count=$(pgrep -la Microsoft | wc -l)
-          if [ "$microsoft_process_count" -gt 0 ]; then
-            pkill Microsoft || true
-          fi
-          sleep 1
-        done
-      ) &
-
-      WATCHDOG_PID=$!
-
-      echo "Running W3Champions..."
-      umu-run "$W3C_EXE" &
-      W3C_PID="$!"
-
-      wait "$W3C_PID"
-      wait "$WATCHDOG_PID"
+      install-w3champions
     '';
   };
   warcraft-settings = pkgs.writeShellApplication {
