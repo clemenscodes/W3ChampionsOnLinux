@@ -327,7 +327,7 @@ W3C_AUTH_DATA="<your/path/to/com.w3champions.client" ./scripts/w3c-login-bypass.
 If you have some existing settings and hotkeys,
 you can use the [warcraft-settings.sh](./scripts/warcraft-settings.sh)
 script to install those settings in the prefix.
-This repository contains a German grid-hotkey layout `CustomKeys.txt` and a `War3Preferences.txt` file
+This repository contains a German grid-hotkey layout [CustomKeys.txt](./CustomKeys.txt) and a [War3Preferences.txt](./W3Champions.yaml) file
 to configure Warcraft III using my preferred settings.
 You can update these files to your preferences and then run the script to install them.
 
