@@ -398,7 +398,6 @@
         if [ "$active_window" = "Invalid" ]; then
           active_workspace="$(hyprctl activeworkspace -j | jq .id)"
           if [ "$active_workspace" -ne 3 ]; then
-            WARCRAFT_ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n 1 | cut -c3-)"
             if [ -n "$WARCRAFT_ADDRESS" ]; then
               if [ "$MATCH_ACTIVE" -eq 1 ]; then
                 return
@@ -435,6 +434,7 @@
               W3C_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "W3Champions") | .pid' | head -n 1)"
             fi
             hyprctl --batch "dispatch focuswindow pid:$W3C_PID ; dispatch movecursor 1350 330"
+            sleep 1
           fi
         fi
       }
