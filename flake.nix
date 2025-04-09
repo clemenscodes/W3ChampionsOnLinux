@@ -149,71 +149,6 @@
         fi
       '';
     };
-    battlenet = pkgs.writeShellApplication {
-      name = "battlenet";
-      runtimeInputs = [
-        pkgs.curl
-        pkgs.umu-launcher
-        pkgs.zenity
-      ];
-      text = ''
-        export PROTON_VERB=run
-        export PROTONPATH="${pkgs.proton-ge-bin.steamcompattool}"
-        export UMU_LOG=0
-        export STORE=none
-        export GAMEID=w3champions
-
-        export WINEARCH="win64"
-        export WINEDEBUG="-all"
-        export WINEPREFIX=$HOME/Games/W3Champions
-
-        export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
-        export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
-        export BNET_EXE="$PROGRAM_FILES86/Battle.net/Battle.net.exe"
-        export BNET_SETUP_EXE="$DOWNLOADS/BattleNet-Setup.exe"
-        export BATTLENET_URL="https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe"
-
-        if [ ! -f "$BNET_EXE" ]; then
-          if [ ! -f "$BNET_SETUP_EXE" ]; then
-            echo "Downloading Battle.net Launcher..."
-            mkdir -p "$DOWNLOADS"
-            curl -L "$BATTLENET_URL" -o "$BNET_SETUP_EXE"
-          fi
-
-          (
-            set +e
-            while true; do
-              microsoft_process_count=$(pgrep -la Microsoft | wc -l)
-              if [ "$microsoft_process_count" -gt 0 ]; then
-                pkill Microsoft || true
-                break
-              fi
-              sleep 1
-            done
-          ) &
-
-          WATCHDOG_PID=$!
-
-          echo "Installing Battle.net..."
-          echo "Run Warcraft III at least once before you start W3Champions."
-          echo "Then close Warcraft III and Battle.net to proceed."
-          umu-run "$BNET_SETUP_EXE" &
-          BATTLE_NET_PID="$!"
-
-          wait "$BATTLE_NET_PID"
-          wait "$WATCHDOG_PID"
-
-          if [ ! -f "$BNET_EXE" ]; then
-            echo "Failed installing Battle.net."
-            exit 1
-          fi
-
-          echo "Finished installing Battle.net."
-        fi
-
-        # Using cat to ensure the output is writeable, might break FLO connection if not
-      '';
-    };
     w3champions = pkgs.writeShellApplication {
       name = "w3champions";
       runtimeInputs = [
@@ -354,7 +289,6 @@
         pkgs.curl
         pkgs.umu-launcher
         webview2
-        battlenet
         w3champions
         bonjour
       ];
@@ -385,10 +319,6 @@
         export WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeCore"
         export WEBVIEW2_URL="https://go.microsoft.com/fwlink/?linkid=2124703"
 
-        export BNET_SETUP_EXE="$DOWNLOADS/BattleNet-Setup.exe"
-        export BNET_EXE="$PROGRAM_FILES86/Battle.net/Battle.net.exe"
-        export BATTLENET_URL="https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe"
-
         export W3C_LEGACY_SETUP_EXE="$DOWNLOADS/w3c-setup.exe"
         export W3C_LEGACY_EXE="$APPDATA_LOCAL/Programs/w3champions/w3champions.exe"
         export W3C_LEGACY_URL="https://update-service.w3champions.com/api/launcher/win"
@@ -418,7 +348,6 @@
           fi
         fi
 
-        # battlenet
         w3champions
       '';
     };
@@ -466,17 +395,48 @@
         wait "$WATCHDOG_PID"
       '';
     };
+    w3c-login-bypass = pkgs.writeShellApplication {
+      name = "w3c-login-bypass";
+      runtimeInputs = [
+        pkgs.rsync
+      ];
+      text = ''
+        export WINEPATH="$HOME/Games"
+        export WINEPREFIX="$WINEPATH/W3Champions"
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
+        export USER_HOME="$WINEPREFIX/drive_c/users/$USER"
+        export APPDATA="$USER_HOME/AppData"
+        export APPDATA_LOCAL="$APPDATA/Local"
+        export W3C_DATA="$APPDATA_LOCAL/com.w3champions.client"
+        export W3C_AUTH_DATA="''${W3C_AUTH_DATA:-}"
+
+        if [[ -z "$W3C_AUTH_DATA" ]]; then
+          echo "Error: W3C_AUTH_DATA is not set. Aborting."
+          exit 1
+        fi
+
+        if [[ ! -d "$W3C_AUTH_DATA" ]]; then
+          echo "Error: Source directory '$W3C_AUTH_DATA' does not exist. Aborting."
+          exit 1
+        fi
+
+        mkdir -p "$W3C_DATA"
+
+        rsync -av --delete "$W3C_AUTH_DATA/" "$W3C_DATA/"
+      '';
+    };
   in {
     packages = {
       ${system} = {
         inherit
           webview2
-          battlenet
           w3champions
           w3champions-legacy
           bonjour
           install-warcraft
           warcraft
+          w3c-login-bypass
           ;
         default = self.packages.${system}.warcraft;
       };
@@ -486,12 +446,12 @@
         default = pkgs.mkShell {
           buildInputs = [
             webview2
-            battlenet
             w3champions
             w3champions-legacy
             bonjour
             install-warcraft
             warcraft
+            w3c-login-bypass
           ];
           nativeBuildInputs = [
             pkgs.curl
@@ -516,6 +476,7 @@
             export APPDATA="$WINEPREFIX/drive_c/users/$USER/AppData"
             export APPDATA_LOCAL="$APPDATA/Local"
             export APPDATA_ROAMING="$APPDATA/Roaming"
+            export W3C_DATA="$APPDATA_LOCAL/com.w3champions.client"
 
             export WARCRAFT_HOME="$PROGRAM_FILES86/Warcraft III"
             export WARCRAFT_CONFIG_HOME="$DOCUMENTS/Warcraft III"
@@ -523,10 +484,6 @@
             export WEBVIEW2_SETUP_EXE="$DOWNLOADS/MicrosoftEdgeWebview2Setup.exe"
             export WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeCore"
             export WEBVIEW2_URL="https://go.microsoft.com/fwlink/?linkid=2124703"
-
-            export BNET_SETUP_EXE="$DOWNLOADS/BattleNet-Setup.exe"
-            export BNET_EXE="$PROGRAM_FILES86/Battle.net/Battle.net.exe"
-            export BATTLENET_URL="https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe"
 
             export W3C_LEGACY_SETUP_EXE="$DOWNLOADS/w3c-setup.exe"
             export W3C_LEGACY_EXE="$APPDATA_LOCAL/Programs/w3champions/w3champions.exe"
