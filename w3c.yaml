@@ -1,6 +1,6 @@
 description: "Installs WebView2 + Battle.net + W3Champions. Note: Proton-GE-9-26 is recommended. You need to run Battle.net to install and then run Warcraft III at least once before W3Champions will work."
-game_slug: w3champions
-installer_slug: w3champions
+game_slug: W3Champions
+installer_slug: W3Champions
 name: "W3Champions"
 runner: wine
 script:
@@ -55,7 +55,7 @@ script:
     env:
       PROTON_VERB: run
     exclude_processes: Agent.exe "Battle.net Helper.exe" MicrosoftEdgeUpdate.exe MicrosoftEdgeUp
-slug: warcraft-iii-reforged-battlenet-w3champions-webview2
+slug: W3Champions
 steamid: null
-version: Battle.net + w3champions + webview2
+version: Battle.net + W3Champions + WebView2
 year: 2020
