@@ -392,9 +392,17 @@
             WARCRAFT_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .pid' | head -n 1)"
             if [ -n "$WARCRAFT_PID" ]; then
               notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
+              sleep 4
               warcraft-mode-start
-              sleep 5
-              hyprctl --batch "dispatch focuswindow pid:$WARCRAFT_PID ; dispatch fullscreen 0"
+              notify-send --expire-time 3000 "Warcraft III hotkeys activated!" --icon "${self}/assets/Warcraft.png"
+              screen_width="$(hyprctl monitors -j | jq -r '.[] | .width')"
+              screen_height="$(hyprctl monitors -j | jq -r '.[] | .width')"
+              screen_center_x=$((screen_width / 2))
+              screen_center_y=$((screen_height / 2))
+              sleep 2
+              hyprctl --batch "dispatch focuswindow pid:$WARCRAFT_PID ; dispatch fullscreen 0 ; dispatch movecursor $screen_center_x $screen_center_y"
+              sleep 1
+              hyprctl --batch "dispatch movecursor $screen_center_x $screen_center_y"
             fi
           fi
         fi
@@ -407,7 +415,7 @@
           if [ -n "$W3C_PID" ]; then
             warcraft-mode-stop
             notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
-            hyprctl --batch "dispatch focuswindow pid:$W3C_PID"
+            hyprctl --batch "dispatch focuswindow pid:$W3C_PID ; dispatch movecursor 1350 330"
           fi
         fi
       }
