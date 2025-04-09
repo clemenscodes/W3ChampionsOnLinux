@@ -17,6 +17,7 @@
         warcraft-copy
         warcraft-settings
         w3c-login-bypass
+        focus-warcraft-game
       ];
     };
 }
