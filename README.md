@@ -130,7 +130,7 @@ Select the system options, toggle the `Advanced` switch, scroll down and add an 
 
 ## Lutris installation
 
-The following steps are automated using the `w3c.yaml` [script](./w3c.yaml).
+The following steps are automated using the `W3Champions.yaml` [script](./W3Champions.yaml).
 The script may work, however it tends to get stuck waiting for lingering processes to finish.
 For that reason, I will demonstrate the manual method.
 
@@ -278,7 +278,7 @@ And then paste the copied directory from the USB stick to `$HOME/Games/W3Champio
 > The path `/mnt/com.w3champions.client` assumes that you mounted the USB drive at `/mnt` and that it contains the directory there.
 > Adjust this to however you have to.
 
-### Postinstallation Steps
+### Postinstallation steps
 
 You can now launch W3Champions, and it should actually work.
 When it boots up the first time, W3Champions will launch the Warcraft III game in offline mode and configure it for use by W3Champions.
@@ -302,6 +302,38 @@ net start "Bonjour Service"
 Then select that file as the game executable in lutris.
 
 This will make W3Champions pass the LAN test and you are ready to climb the ladder on linux.
+
+#### Reinstalling
+
+If you already have an existing Warcraft III installation, you can streamline the installation to the prefix.
+The [warcraft-copy.sh](./scripts/warcraft-copy.sh) reads the `WARCRAFT_PATH` environment variable
+with the path of that existing installation anad copies it into the expected location in the prefix.
+From the root of this repository, it can be used like this.
+
+```bash
+WARCRAFT_PATH="<your/path/to/Warcraft III>" ./scripts/warcraft-copy.sh
+```
+
+If you have an existing W3Champions AppData folder that is authorized,
+for example from a Windows VM,
+you can streamline the installation of that folder using the [w3c-login-bypass.sh](./scripts/w3c-login-bypass.sh) script.
+The script reads the `W3C_AUTH_DATA` environment variable and puts that in the expected location in the prefix.
+You can use it like this.
+
+```bash
+W3C_AUTH_DATA="<your/path/to/com.w3champions.client" ./scripts/w3c-login-bypass.sh
+```
+
+If you have some existing settings and hotkeys,
+you can use the [warcraft-settings.sh](./scripts/warcraft-settings.sh)
+script to install those settings in the prefix.
+This repository contains a German grid-hotkey layout `CustomKeys.txt` and a `War3Preferences.txt` file
+to configure Warcraft III using my preferred settings.
+You can update these files to your preferences and then run the script to install them.
+
+```bash
+./scripts/warcraft-settings.sh
+```
 
 ## Known issues
 
@@ -381,14 +413,6 @@ done
 
 LUTRIS_SKIP_INIT=1 lutris lutris:rungame/w3champions & # you can find the game name using `lutris -l`
 ```
-
-### Flo won't connect on successive attempts on NixOS
-
-Follow the guide from start to finish until the end, do not launch W3Champions.
-Backup the created wineprefix. Before any launch, copy the backup and run W3Champions from that freshly created backup.
-For some reason, some state inside the prefix after running W3Champions gets corrupted in a way that, on NixOS, the connection to Flo will not succeed anymore.
-A fresh prefix will work. So keep running from a fresh prefix.
-An example setup can be found [here](https://github.com/clemenscodes/cymenixos/blob/main/modules/gaming/w3champions/warcraft/default.nix).
 
 ### Blackscreen / W3Champions not launching
 

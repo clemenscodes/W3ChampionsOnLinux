@@ -1,0 +1,63 @@
+description: "Installs WebView2 + Battle.net + W3Champions. Note: Proton-GE-9-26 is recommended. You need to run Battle.net to install and then run Warcraft III at least once before W3Champions will work. Should the installer get stuck, for example after the installation of WebView2, then you have to manually kill the lingering MicrosoftEdgeUpdate.exe process. That process might also prevent other installation steps from finishing successfully and thus preventing Lutris from advancing to the next installation step. A fully manual guide is available at `https://github.com/clemenscodes/W3ChampionsOnLinux`."
+slug: W3Champions
+name: W3Champions
+game_slug: W3Champions
+installer_slug: W3Champions
+version: W3Champions
+year: 2020
+steamid: null
+runner: wine
+script:
+  system:
+    env:
+      PROTON_VERB: run
+    exclude_processes: MicrosoftEdgeUpdate.exe
+  files:
+    - battlenet:
+        filename: Battle.net-Setup.exe
+        url: https://www.battle.net/download/getInstallerForGame?os=win&version=LIVE&gameProgram=BATTLENET_APP
+    - w3champions:
+        filename: W3Champions_latest_x64_en-US.msi
+        url: https://update-service.w3champions.com/api/launcher-e
+    - webview2:
+        filename: MicrosoftEdgeWebview2RuntimeInstallerX64.exe
+        url: https://go.microsoft.com/fwlink/?linkid=2124703
+  game:
+    arch: win64
+    exe: $GAMEDIR/drive_c/Program Files/W3Champions/W3Champions.exe
+    prefix: $GAMEDIR
+  installer:
+    - task:
+        arch: win64
+        description: "Creating 64bit Wine prefix."
+        name: create_prefix
+        prefix: $GAMEDIR
+    - task:
+        arch: win64
+        description: "Installing WebView2... Run `pkill Microsoft` in a second terminal if the installer is stuck."
+        prefix: $GAMEDIR
+        executable: webview2
+        name: wineexec
+        exclude_processes: MicrosoftEdgeUpdate.exe
+    - task:
+        arch: win64
+        description: "Setting msedgewebview2.exe to Windows 7 so WebView2 apps render instead of black screen. Run `pkill Microsoft` in a second terminal if the installer is stuck."
+        key: Version
+        name: set_regedit
+        path: HKEY_CURRENT_USER\Software\Wine\AppDefaults\msedgewebview2.exe
+        prefix: $GAMEDIR
+        value: win7
+    - task:
+        arch: win64
+        executable: battlenet
+        name: wineexec
+        description: "Installing Battle.net... Install Battle.net normally. After installation, login and start Warcraft III. Warcraft III should start normally and the BlizzardBrowser should render properly. If you encounter a blackscreen or you get stuck at the lion gate, then you might have wrong GPU or Vulkan drivers installed, your GPU crashes. Close Warcraft III and Battle.net after you are done to proceed to the next step. Run `pkill Microsoft` in a second terminal if the installer is stuck."
+        prefix: $GAMEDIR
+        exclude_processes: MicrosoftEdgeUpdate.exe
+    - task:
+        arch: win64
+        description: "Installing W3Champions... Run `pkill Microsoft` in a second terminal if the installer is stuck. After the installation finished, the launcher will open and you will have to Sign In. When pressing Sign In, the the launcher likely crashes. This can be bypassed. Follow the guide at `https://github.com/clemenscodes/W3ChampionsOnLinux#running-and-signing-in-to-w3champions` to learn how."
+        executable: w3champions
+        prefix: $GAMEDIR
+        name: wineexec
+        exclude_processes: MicrosoftEdgeUpdate.exe

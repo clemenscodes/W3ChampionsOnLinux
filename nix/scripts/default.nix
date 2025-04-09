@@ -344,7 +344,9 @@
       mkdir -p "$WARCRAFT_CONFIG_HOME"
       mkdir -p "$WARCRAFT_CONFIG_HOME/CustomKeyBindings"
 
+      echo "Installing Warcraft III settings..."
       cat ${self}/War3Preferences.txt > "$WARCRAFT_CONFIG_HOME/War3Preferences.txt"
+      echo "Installing Warcraft III hotkeys..."
       cat ${self}/CustomKeys.txt > "$WARCRAFT_CONFIG_HOME/CustomKeyBindings/CustomKeys.txt"
 
       if [[ -z "$WARCRAFT_PATH" ]]; then
@@ -368,6 +370,8 @@
           echo "You can provide the installer with an existing Warcraft III installation."
           echo "Pass WARCRAFT_PATH environment variable to the script pointing to an existing install of Warcraft III."
         fi
+      else
+        echo "Warcraft III is already installed. Done."
       fi
     '';
   };
