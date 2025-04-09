@@ -16,6 +16,7 @@
         install-warcraft
         warcraft
         warcraft-copy
+        warcraft-settings
         w3c-login-bypass
       ];
     };

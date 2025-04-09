@@ -328,6 +328,26 @@
       wait "$WATCHDOG_PID"
     '';
   };
+  warcraft-settings = pkgs.writeShellApplication {
+    name = "warcraft-settings";
+    text = ''
+      export WINEPATH="$HOME/Games"
+      export WINEPREFIX="$WINEPATH/W3Champions"
+      export DOCUMENTS="$WINEPREFIX/drive_c/users/$USER/Documents"
+      export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
+      export WARCRAFT_HOME="$PROGRAM_FILES86/Warcraft III"
+      export WARCRAFT_CONFIG_HOME="$DOCUMENTS/Warcraft III"
+
+      mkdir -p "$WARCRAFT_CONFIG_HOME/CustomKeyBindings"
+
+      echo "Installing Warcraft III settings..."
+      cat ${self}/War3Preferences.txt > "$WARCRAFT_CONFIG_HOME/War3Preferences.txt"
+      echo "Installing Warcraft III hotkeys..."
+      cat ${self}/CustomKeys.txt > "$WARCRAFT_CONFIG_HOME/CustomKeyBindings/CustomKeys.txt"
+      echo "Installing W3Champions.bat with Bonjour workarounds..."
+      cat ${self}/W3Champions.bat > "$W3CHAMPIONS_HOME/W3Champions.bat"
+    '';
+  };
   warcraft-copy = pkgs.writeShellApplication {
     name = "warcraft-copy";
     text = ''
@@ -335,19 +355,9 @@
       export WINEPREFIX="$WINEPATH/W3Champions"
       export WINEARCH="win64"
       export WINEDEBUG="-all"
-      export DOCUMENTS="$WINEPREFIX/drive_c/users/$USER/Documents"
       export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
       export WARCRAFT_HOME="$PROGRAM_FILES86/Warcraft III"
-      export WARCRAFT_CONFIG_HOME="$DOCUMENTS/Warcraft III"
       export WARCRAFT_PATH="''${WARCRAFT_PATH:-}"
-
-      mkdir -p "$WARCRAFT_CONFIG_HOME"
-      mkdir -p "$WARCRAFT_CONFIG_HOME/CustomKeyBindings"
-
-      echo "Installing Warcraft III settings..."
-      cat ${self}/War3Preferences.txt > "$WARCRAFT_CONFIG_HOME/War3Preferences.txt"
-      echo "Installing Warcraft III hotkeys..."
-      cat ${self}/CustomKeys.txt > "$WARCRAFT_CONFIG_HOME/CustomKeyBindings/CustomKeys.txt"
 
       if [[ -z "$WARCRAFT_PATH" ]]; then
         echo "Error: WARCRAFT_PATH is not set. Aborting."
