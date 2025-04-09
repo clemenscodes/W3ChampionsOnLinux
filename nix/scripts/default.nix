@@ -390,6 +390,7 @@
       SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
       SCREEN_CENTER_X=$((SCREEN_WIDTH / 2))
       SCREEN_CENTER_Y=$((SCREEN_HEIGHT / 2))
+      MATCH_ACTIVE=0
 
       handle_fullscreen() {
         active_window="$(hyprctl activewindow)"
@@ -398,6 +399,10 @@
           if [ "$active_workspace" -ne 3 ]; then
             WARCRAFT_ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n 1 | cut -c3-)"
             if [ -n "$WARCRAFT_ADDRESS" ]; then
+              if [ "$MATCH_ACTIVE" -eq 1 ]; then
+                return
+              fi
+              MATCH_ACTIVE=1
               notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
               sleep 4
               warcraft-mode-start
@@ -415,6 +420,10 @@
         address="$(echo "$line" | awk -F '>>' '{print $1}')"
 
         if [ "$address" = "$WARCRAFT_ADDRESS" ]; then
+          if [ "$MATCH_ACTIVE" -eq 0 ]; then
+            return
+          fi
+          MATCH_ACTIVE=0
           warcraft-mode-stop
           notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
           active_workspace="$(hyprctl activeworkspace -j | jq .id)"
