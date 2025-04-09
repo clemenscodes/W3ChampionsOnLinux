@@ -380,6 +380,7 @@
       pkgs.socat
       pkgs.jq
       pkgs.libnotify
+      pkgs.swaynotificationcenter
       warcraft-mode-start
       warcraft-mode-stop
     ];
@@ -403,6 +404,7 @@
                 return
               fi
               MATCH_ACTIVE=1
+              swaync-client -dn
               notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
               sleep 4
               warcraft-mode-start
@@ -424,6 +426,7 @@
             return
           fi
           MATCH_ACTIVE=0
+          swaync-client -df
           warcraft-mode-stop
           notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
           active_workspace="$(hyprctl activeworkspace -j | jq .id)"
