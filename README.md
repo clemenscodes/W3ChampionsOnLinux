@@ -3,6 +3,38 @@
 W3Champions, the competitive ladder and matchmaking platform for Warcraft III, is now working on Linux!
 This guide will walk you through installing and running it on your system.
 
+Connected W3Champions launcher.
+
+![flo-pings](./assets/flo-connection.png)
+
+Offline Warcraft III instance.
+
+![offline-wc3](./assets/offline-wc3.png)
+
+Ingame launcher.
+
+![in-game-launcher](./assets/ingame-launcher.png)
+
+Ingame client.
+
+![in-game](./assets/ingame.png)
+
+Postgame stats.
+
+![postgame](./assets/postgame.png)
+
+Postgame lobby.
+
+![postgame-lobby](./assets/postgame-lobby.png)
+
+Watching replays works.
+
+![replay](./assets/replay.png)
+
+Observing FLO games works.
+
+![observation](./assets/replay.png)
+
 ---
 
 ## Supported Runners
