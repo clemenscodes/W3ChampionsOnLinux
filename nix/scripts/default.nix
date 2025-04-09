@@ -384,46 +384,61 @@
       warcraft-mode-stop
     ];
     text = ''
+      WARCRAFT_ADDRESS="''${WARCRAFT_ADDRESS:-}"
+      W3C_PID="''${W3C_PID:-}"
+      SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[] | .width')"
+      SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
+      SCREEN_CENTER_X=$((SCREEN_WIDTH / 2))
+      SCREEN_CENTER_Y=$((SCREEN_HEIGHT / 2))
+
       handle_fullscreen() {
         active_window="$(hyprctl activewindow)"
         if [ "$active_window" = "Invalid" ]; then
           active_workspace="$(hyprctl activeworkspace -j | jq .id)"
           if [ "$active_workspace" -ne 3 ]; then
-            WARCRAFT_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .pid' | head -n 1)"
-            if [ -n "$WARCRAFT_PID" ]; then
+            WARCRAFT_ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n 1 | cut -c3-)"
+            if [ -n "$WARCRAFT_ADDRESS" ]; then
               notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
               sleep 4
               warcraft-mode-start
-              notify-send --expire-time 3000 "Warcraft III hotkeys activated!" --icon "${self}/assets/Warcraft.png"
-              screen_width="$(hyprctl monitors -j | jq -r '.[] | .width')"
-              screen_height="$(hyprctl monitors -j | jq -r '.[] | .width')"
-              screen_center_x=$((screen_width / 2))
-              screen_center_y=$((screen_height / 2))
-              sleep 2
-              hyprctl --batch "dispatch focuswindow pid:$WARCRAFT_PID ; dispatch fullscreen 0 ; dispatch movecursor $screen_center_x $screen_center_y"
               sleep 1
-              hyprctl --batch "dispatch movecursor $screen_center_x $screen_center_y"
+              hyprctl --batch "dispatch focuswindow address:$WARCRAFT_ADDRESS; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
+              sleep 1
+              hyprctl --batch "dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
             fi
           fi
         fi
       }
 
       handle_closewindow() {
-        active_workspace="$(hyprctl activeworkspace -j | jq .id)"
-        if [ "$active_workspace" -ne 2 ]; then
-          W3C_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "W3Champions") | .pid' | head -n 1)"
-          if [ -n "$W3C_PID" ]; then
-            warcraft-mode-stop
-            notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
+        line="$1"
+        address="$(echo "$line" | awk -F '>>' '{print $1}')"
+
+        if [ "$address" = "$WARCRAFT_ADDRESS" ]; then
+          warcraft-mode-stop
+          notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
+          active_workspace="$(hyprctl activeworkspace -j | jq .id)"
+          if [ "$active_workspace" -ne 2 ]; then
+            if [ -z "$W3C_PID" ]; then
+              W3C_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "W3Champions") | .pid' | head -n 1)"
+            fi
             hyprctl --batch "dispatch focuswindow pid:$W3C_PID ; dispatch movecursor 1350 330"
           fi
         fi
       }
 
+      handle_openwindow() {
+        line="$1"
+        case "$line" in
+          *Warcraft*) WARCRAFT_ADDRESS="$(echo "$line" | awk -F '>>' '{print $2}' | awk -F ',' '{print $1}')" ;;
+        esac
+      }
+
       handle() {
         case "$1" in
           fullscreen*) handle_fullscreen ;;
-          closewindow*) handle_closewindow ;;
+          closewindow*) handle_closewindow "$1";;
+          openwindow*) handle_openwindow "$1";;
         esac
       }
 
@@ -519,9 +534,11 @@
     name = "warcraft-mode-start";
     runtimeInputs = [
       pkgs.hyprland
+      pkgs.libnotify
     ];
     text = ''
       hyprctl dispatch submap WARCRAFT
+      notify-send --expire-time 3000 "Warcraft III hotkeys activated!" --icon "${self}/assets/Warcraft.png"
     '';
   };
   warcraft-mode-stop = pkgs.writeShellApplication {
