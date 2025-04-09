@@ -33,7 +33,7 @@ Watching replays works.
 
 Observing FLO games works.
 
-![observation](./assets/replay.png)
+![observation](./assets/observation.png)
 
 ---
 
