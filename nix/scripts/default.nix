@@ -394,38 +394,39 @@
       MATCH_ACTIVE=0
 
       handle_fullscreen() {
+        if [ "$MATCH_ACTIVE" -eq 1 ]; then
+          return
+        fi
+
         active_window="$(hyprctl activewindow)"
         if [ "$active_window" = "Invalid" ]; then
+          MATCH_ACTIVE=1
+
+          notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
+          sleep 3
           active_workspace="$(hyprctl activeworkspace -j | jq .id)"
           if [ "$active_workspace" -ne 3 ]; then
             if [ -n "$WARCRAFT_ADDRESS" ]; then
-              if [ "$MATCH_ACTIVE" -eq 1 ]; then
-                return
-              fi
-              MATCH_ACTIVE=1
-              swaync-client -dn
-              notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
-              sleep 4
               warcraft-mode-start
               sleep 1
+              swaync-client -dn
               hyprctl --batch "dispatch focuswindow address:$WARCRAFT_ADDRESS; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
-              sleep 1
-              hyprctl --batch "dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
             fi
           fi
         fi
       }
 
       handle_closewindow() {
+        if [ "$MATCH_ACTIVE" -eq 0 ]; then
+          return
+        fi
+
         line="$1"
         address="$(echo "$line" | awk -F '>>' '{print $1}')"
 
         if [ "$address" = "$WARCRAFT_ADDRESS" ]; then
-          if [ "$MATCH_ACTIVE" -eq 0 ]; then
-            return
-          fi
-          MATCH_ACTIVE=0
           swaync-client -df
+          MATCH_ACTIVE=0
           warcraft-mode-stop
           notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
           active_workspace="$(hyprctl activeworkspace -j | jq .id)"
@@ -448,13 +449,14 @@
 
       handle() {
         case "$1" in
-          fullscreen*) handle_fullscreen ;;
+          fullscreen*) handle_fullscreen "$1" ;;
           closewindow*) handle_closewindow "$1";;
           openwindow*) handle_openwindow "$1";;
         esac
       }
 
       socat -U - UNIX-CONNECT:"$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
+        echo "$line"
         handle "$line";
       done
     '';
