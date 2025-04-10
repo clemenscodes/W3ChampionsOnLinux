@@ -34,6 +34,20 @@ script:
         prefix: $GAMEDIR
     - task:
         arch: win64
+        executable: battlenet
+        name: wineexec
+        description: "Installing Battle.net... Install Battle.net normally. After installation, login and start Warcraft III. Warcraft III should start normally and the BlizzardBrowser should render properly. If you encounter a blackscreen or you get stuck at the lion gate, then you might have wrong GPU or Vulkan drivers installed, your GPU crashes. Close Warcraft III and Battle.net after you are done to proceed to the next step."
+        prefix: $GAMEDIR
+        exclude_processes: MicrosoftEdgeUpdate.exe
+    - task:
+        arch: win64
+        description: "Installing W3Champions... Do not launch W3Champions when the installer finishes. WebView2 has to be installed before the launcher can render. After the installation finished, the launcher will open and you will have to Sign In. When pressing Sign In, the the launcher likely crashes. This can be bypassed. Follow the guide at `https://github.com/clemenscodes/W3ChampionsOnLinux#running-and-signing-in-to-w3champions` to learn how."
+        executable: w3champions
+        prefix: $GAMEDIR
+        name: wineexec
+        exclude_processes: MicrosoftEdgeUpdate.exe
+    - task:
+        arch: win64
         description: "Installing WebView2... Run `pkill Microsoft` in a second terminal if the installer is stuck."
         prefix: $GAMEDIR
         executable: webview2
@@ -47,17 +61,3 @@ script:
         path: HKEY_CURRENT_USER\Software\Wine\AppDefaults\msedgewebview2.exe
         prefix: $GAMEDIR
         value: win7
-    - task:
-        arch: win64
-        executable: battlenet
-        name: wineexec
-        description: "Installing Battle.net... Install Battle.net normally. After installation, login and start Warcraft III. Warcraft III should start normally and the BlizzardBrowser should render properly. If you encounter a blackscreen or you get stuck at the lion gate, then you might have wrong GPU or Vulkan drivers installed, your GPU crashes. Close Warcraft III and Battle.net after you are done to proceed to the next step. Run `pkill Microsoft` in a second terminal if the installer is stuck."
-        prefix: $GAMEDIR
-        exclude_processes: MicrosoftEdgeUpdate.exe
-    - task:
-        arch: win64
-        description: "Installing W3Champions... Run `pkill Microsoft` in a second terminal if the installer is stuck. After the installation finished, the launcher will open and you will have to Sign In. When pressing Sign In, the the launcher likely crashes. This can be bypassed. Follow the guide at `https://github.com/clemenscodes/W3ChampionsOnLinux#running-and-signing-in-to-w3champions` to learn how."
-        executable: w3champions
-        prefix: $GAMEDIR
-        name: wineexec
-        exclude_processes: MicrosoftEdgeUpdate.exe
