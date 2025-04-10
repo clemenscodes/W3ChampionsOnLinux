@@ -385,53 +385,42 @@
       warcraft-mode-stop
     ];
     text = ''
-      WARCRAFT_ADDRESS="''${WARCRAFT_ADDRESS:-}"
-      W3C_PID="''${W3C_PID:-}"
+      W3C_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "W3Champions") | .pid' | head -n 1)"
+      WARCRAFT_ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n1)"
       SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[] | .width')"
       SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
       SCREEN_CENTER_X=$((SCREEN_WIDTH / 2))
       SCREEN_CENTER_Y=$((SCREEN_HEIGHT / 2))
-      MATCH_ACTIVE=0
 
       handle_fullscreen() {
-        if [ "$MATCH_ACTIVE" -eq 1 ]; then
-          return
-        fi
-
-        active_window="$(hyprctl activewindow)"
-        if [ "$active_window" = "Invalid" ]; then
-          MATCH_ACTIVE=1
-
+        if [ "$(hyprctl activewindow)" = "Invalid" ]; then
           notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
-          sleep 3
-          active_workspace="$(hyprctl activeworkspace -j | jq .id)"
-          if [ "$active_workspace" -ne 3 ]; then
-            if [ -n "$WARCRAFT_ADDRESS" ]; then
-              warcraft-mode-start
-              sleep 1
-              swaync-client -dn
-              hyprctl --batch "dispatch focuswindow address:$WARCRAFT_ADDRESS; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
-            fi
+          if [ -n "$WARCRAFT_ADDRESS" ]; then
+            WARCRAFT_ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n1)"
           fi
+          sleep 2
+          active_workspace="$(hyprctl activeworkspace -j | jq .id)"
+          sleep 2
+          warcraft-mode-start
+          sleep 2
+          if [ "$active_workspace" -ne 3 ]; then
+            hyprctl --batch "dispatch focuswindow address:$WARCRAFT_ADDRESS ; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
+          fi
+          swaync-client -dn
         fi
       }
 
       handle_closewindow() {
-        if [ "$MATCH_ACTIVE" -eq 0 ]; then
-          return
-        fi
-
         line="$1"
-        address="$(echo "$line" | awk -F '>>' '{print $1}')"
+        address="$(echo "$line" | awk -F '>>' '{print $2}')"
 
         if [ "$address" = "$WARCRAFT_ADDRESS" ]; then
           swaync-client -df
-          MATCH_ACTIVE=0
           warcraft-mode-stop
           notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
           active_workspace="$(hyprctl activeworkspace -j | jq .id)"
           if [ "$active_workspace" -ne 2 ]; then
-            if [ -z "$W3C_PID" ]; then
+            if [ -n "$W3C_PID" ]; then
               W3C_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "W3Champions") | .pid' | head -n 1)"
             fi
             hyprctl --batch "dispatch focuswindow pid:$W3C_PID ; dispatch movecursor 1350 330"
@@ -456,7 +445,6 @@
       }
 
       socat -U - UNIX-CONNECT:"$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
-        echo "$line"
         handle "$line";
       done
     '';
