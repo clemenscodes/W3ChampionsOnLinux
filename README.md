@@ -1,4 +1,4 @@
-# Installing W3Champions on Linux ![W3C](./assets/W3Champions.png)
+# Installing W3Champions on Linux
 
 W3Champions, the competitive ladder and matchmaking platform for Warcraft III, is now working on Linux!
 This guide will walk you through installing and running it on your system.
@@ -249,7 +249,7 @@ Set the version to Windows 7.
 
 Click Apply and OK.
 
-### Installing Battle.net ![Battle.net](./assets/Battle.net.png)
+### Installing Battle.net
 
 Next, installing Battle.net which can be downloaded [here](https://download.battle.net/en-us/?product=bnetdesk).
 
