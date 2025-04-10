@@ -385,7 +385,6 @@
       warcraft-mode-stop
     ];
     text = ''
-      W3C_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "W3Champions") | .pid' | head -n 1)"
       WARCRAFT_ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n1)"
       SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[] | .width')"
       SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
@@ -394,18 +393,11 @@
 
       handle_fullscreen() {
         if [ "$(hyprctl activewindow)" = "Invalid" ]; then
-          notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
-          if [ -n "$WARCRAFT_ADDRESS" ]; then
-            WARCRAFT_ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n1)"
-          fi
-          sleep 2
-          active_workspace="$(hyprctl activeworkspace -j | jq .id)"
-          sleep 2
+          notify-send --expire-time 3000 "W3Champions match started! ($WARCRAFT_ADDRESS)" --icon "${self}/assets/W3Champions.png"
+          sleep 6
+          hyprctl --batch "dispatch workspace 3 ; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
           warcraft-mode-start
-          sleep 2
-          if [ "$active_workspace" -ne 3 ]; then
-            hyprctl --batch "dispatch focuswindow address:$WARCRAFT_ADDRESS ; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
-          fi
+          sleep 3
           swaync-client -dn
         fi
       }
@@ -414,18 +406,13 @@
         line="$1"
         address="$(echo "$line" | awk -F '>>' '{print $2}')"
 
-        if [ "$address" = "$WARCRAFT_ADDRESS" ]; then
-          swaync-client -df
-          warcraft-mode-stop
+        if [ "0x$address" = "$WARCRAFT_ADDRESS" ]; then
           notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
-          active_workspace="$(hyprctl activeworkspace -j | jq .id)"
-          if [ "$active_workspace" -ne 2 ]; then
-            if [ -n "$W3C_PID" ]; then
-              W3C_PID="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "W3Champions") | .pid' | head -n 1)"
-            fi
-            hyprctl --batch "dispatch focuswindow pid:$W3C_PID ; dispatch movecursor 1350 330"
-            sleep 1
-          fi
+          hyprctl --batch "dispatch workspace 2 ; dispatch movecursor 1350 330"
+          sleep 2
+          warcraft-mode-stop
+          sleep 2
+          swaync-client -df
         fi
       }
 
@@ -438,7 +425,7 @@
 
       handle() {
         case "$1" in
-          fullscreen*) handle_fullscreen "$1" ;;
+          fullscreen*) handle_fullscreen ;;
           closewindow*) handle_closewindow "$1";;
           openwindow*) handle_openwindow "$1";;
         esac
@@ -550,6 +537,7 @@
     ];
     text = ''
       hyprctl dispatch submap reset
+      notify-send --expire-time 3000 "Warcraft III hotkeys deactivated!" --icon "${self}/assets/Warcraft.png"
     '';
   };
   warcraft-chat-open = pkgs.writeShellApplication {
