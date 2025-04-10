@@ -393,11 +393,11 @@
 
       handle_fullscreen() {
         if [ "$(hyprctl activewindow)" = "Invalid" ]; then
-          notify-send --expire-time 3000 "W3Champions match started! ($WARCRAFT_ADDRESS)" --icon "${self}/assets/W3Champions.png"
-          sleep 6
-          hyprctl --batch "dispatch workspace 3 ; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
+          notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
+          sleep 4
           warcraft-mode-start
-          sleep 3
+          hyprctl --batch "dispatch workspace 3 ; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
+          sleep 2
           swaync-client -dn
         fi
       }
@@ -432,6 +432,10 @@
       }
 
       socat -U - UNIX-CONNECT:"$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
+        ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n1)"
+        if [ -n "$ADDRESS" ]; then
+          WARCRAFT_ADDRESS="$ADDRESS"
+        fi
         handle "$line";
       done
     '';
