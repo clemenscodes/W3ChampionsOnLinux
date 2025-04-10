@@ -380,63 +380,42 @@
       pkgs.socat
       pkgs.jq
       pkgs.libnotify
-      pkgs.swaynotificationcenter
       warcraft-mode-start
       warcraft-mode-stop
     ];
     text = ''
-      WARCRAFT_ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n1)"
       SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[] | .width')"
       SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
       SCREEN_CENTER_X=$((SCREEN_WIDTH / 2))
       SCREEN_CENTER_Y=$((SCREEN_HEIGHT / 2))
-
-      handle_fullscreen() {
-        if [ "$(hyprctl activewindow)" = "Invalid" ]; then
-          notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
-          sleep 4
-          warcraft-mode-start
-          hyprctl --batch "dispatch workspace 3 ; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
-          sleep 2
-          swaync-client -dn
-        fi
-      }
-
-      handle_closewindow() {
-        line="$1"
-        address="$(echo "$line" | awk -F '>>' '{print $2}')"
-
-        if [ "0x$address" = "$WARCRAFT_ADDRESS" ]; then
-          notify-send --expire-time 3000 "W3Champions match ended!" --icon "${self}/assets/W3Champions.png"
-          hyprctl --batch "dispatch workspace 2 ; dispatch movecursor 1350 330"
-          sleep 2
-          warcraft-mode-stop
-          sleep 2
-          swaync-client -df
-        fi
-      }
-
-      handle_openwindow() {
-        line="$1"
-        case "$line" in
-          *Warcraft*) WARCRAFT_ADDRESS="$(echo "$line" | awk -F '>>' '{print $2}' | awk -F ',' '{print $1}')" ;;
-        esac
-      }
-
-      handle() {
-        case "$1" in
-          fullscreen*) handle_fullscreen ;;
-          closewindow*) handle_closewindow "$1";;
-          openwindow*) handle_openwindow "$1";;
-        esac
-      }
 
       socat -U - UNIX-CONNECT:"$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
         ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n1)"
         if [ -n "$ADDRESS" ]; then
           WARCRAFT_ADDRESS="$ADDRESS"
         fi
-        handle "$line";
+        case "$line" in
+          fullscreen*)
+            if [ "$(hyprctl activewindow)" = "Invalid" ]; then
+              notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
+              sleep 6
+              warcraft-mode-start
+              hyprctl --batch "dispatch workspace 3 ; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
+            fi
+            ;;
+          closewindow*)
+            address="$(echo "$line" | awk -F '>>' '{print $2}')"
+            if [ "0x$address" = "$WARCRAFT_ADDRESS" ]; then
+              warcraft-mode-stop
+              hyprctl --batch "dispatch workspace 2 ; dispatch movecursor 1350 330"
+            fi
+            ;;
+          openwindow*)
+            case "$line" in
+              *Warcraft*) WARCRAFT_ADDRESS="$(echo "$line" | awk -F '>>' '{print $2}' | awk -F ',' '{print $1}')" ;;
+            esac
+            ;;
+        esac
       done
     '';
   };
@@ -527,21 +506,26 @@
     name = "warcraft-mode-start";
     runtimeInputs = [
       pkgs.hyprland
+      pkgs.swaynotificationcenter
       pkgs.libnotify
     ];
     text = ''
       hyprctl dispatch submap WARCRAFT
       notify-send --expire-time 3000 "Warcraft III hotkeys activated!" --icon "${self}/assets/Warcraft.png"
+      swaync-client -dn
     '';
   };
   warcraft-mode-stop = pkgs.writeShellApplication {
     name = "warcraft-mode-stop";
     runtimeInputs = [
       pkgs.hyprland
+      pkgs.swaynotificationcenter
+      pkgs.libnotify
     ];
     text = ''
       hyprctl dispatch submap reset
       notify-send --expire-time 3000 "Warcraft III hotkeys deactivated!" --icon "${self}/assets/Warcraft.png"
+      swaync-client -df
     '';
   };
   warcraft-chat-open = pkgs.writeShellApplication {
