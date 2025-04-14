@@ -379,7 +379,7 @@
       export WARCRAFT_HOME="$PROGRAM_FILES86/Warcraft III"
       export WARCRAFT_CONFIG_HOME="$DOCUMENTS/Warcraft III"
 
-      mkdir -p "$WARCRAFT_CONFIG_HOME/CustomKeyBindings"
+      mkdir -p "$WARCRAFT_CONFIG_HOME/CustomKeyBindings" "$W3CHAMPIONS_HOME"
 
       echo "Installing Warcraft III settings..."
       cat ${self}/War3Preferences.txt > "$WARCRAFT_CONFIG_HOME/War3Preferences.txt"
