@@ -15,9 +15,9 @@
       export W3C_AUTH_DATA="''${W3C_AUTH_DATA:-}"
       export WARCRAFT_PATH="''${WARCRAFT_PATH:-}"
 
-      warcraft-settings
-      WARCRAFT_PATH="$WARCRAFT_PATH" warcraft-copy
-      W3C_AUTH_DATA="$W3C_AUTH_DATA" w3c-login-bypass
+      warcraft-settings || true
+      WARCRAFT_PATH="$WARCRAFT_PATH" warcraft-copy || true
+      W3C_AUTH_DATA="$W3C_AUTH_DATA" w3c-login-bypass || true
 
       lutris -i ${self}/W3Champions.yaml &
       INSTALL_PID="$!"
@@ -73,12 +73,6 @@
 
       if [ "$INSTALL_EXIT_CODE" -ne 0 ]; then
         echo "Failed to install W3Champions"
-        exit 1
-      fi
-
-      if [ ! -d "$WEBVIEW2_HOME" ]; then
-        echo "Failed installing WebView2 runtime... you might have the wrong Proton-GE version installed."
-        echo "Recommended is at least Proton-GE-9-26".
         exit 1
       fi
 
@@ -392,39 +386,43 @@
   warcraft-copy = pkgs.writeShellApplication {
     name = "warcraft-copy";
     text = ''
-      export WINEPATH="$HOME/Games"
-      export WINEPREFIX="$WINEPATH/W3Champions"
-      export WINEARCH="win64"
-      export WINEDEBUG="-all"
-      export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
-      export WARCRAFT_HOME="$PROGRAM_FILES86/Warcraft III"
-      export WARCRAFT_PATH="''${WARCRAFT_PATH:-}"
+      function warcraft_copy() {
+        export WINEPATH="$HOME/Games"
+        export WINEPREFIX="$WINEPATH/W3Champions"
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
+        export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
+        export WARCRAFT_HOME="$PROGRAM_FILES86/Warcraft III"
+        export WARCRAFT_PATH="''${WARCRAFT_PATH:-}"
 
-      if [[ -z "$WARCRAFT_PATH" ]]; then
-        echo "Error: WARCRAFT_PATH is not set. Aborting."
-        exit 1
-      fi
-
-      if [[ ! -d "$WARCRAFT_PATH" ]]; then
-        echo "Error: Source directory '$WARCRAFT_PATH' does not exist. Aborting."
-        exit 1
-      fi
-
-      if [ ! -d "$WARCRAFT_HOME" ]; then
-        echo "Warcraft III is not installed..."
-        if [ -n "$WARCRAFT_PATH" ]; then
-          echo "Copying $WARCRAFT_PATH to $WARCRAFT_HOME"
-          mkdir -p "$PROGRAM_FILES86"
-          cp -r "$WARCRAFT_PATH" "$WARCRAFT_HOME"
-          rm -rf "$WARCRAFT_HOME/_retail_/webui" || true
-          echo "Finished installing Warcraft III"
-        else
-          echo "You can provide the installer with an existing Warcraft III installation."
-          echo "Pass WARCRAFT_PATH environment variable to the script pointing to an existing install of Warcraft III."
+        if [[ -z "$WARCRAFT_PATH" ]]; then
+          echo "Error: WARCRAFT_PATH is not set. Aborting."
+          return
         fi
-      else
-        echo "Warcraft III is already installed. Done."
-      fi
+
+        if [[ ! -d "$WARCRAFT_PATH" ]]; then
+          echo "Error: Source directory '$WARCRAFT_PATH' does not exist. Aborting."
+          return
+        fi
+
+        if [ ! -d "$WARCRAFT_HOME" ]; then
+          echo "Warcraft III is not installed..."
+          if [ -n "$WARCRAFT_PATH" ]; then
+            echo "Copying $WARCRAFT_PATH to $WARCRAFT_HOME"
+            mkdir -p "$PROGRAM_FILES86"
+            cp -r "$WARCRAFT_PATH" "$WARCRAFT_HOME"
+            rm -rf "$WARCRAFT_HOME/_retail_/webui" || true
+            echo "Finished installing Warcraft III"
+          else
+            echo "You can provide the installer with an existing Warcraft III installation."
+            echo "Pass WARCRAFT_PATH environment variable to the script pointing to an existing install of Warcraft III."
+          fi
+        else
+          echo "Warcraft III is already installed. Done."
+        fi
+      }
+
+      warcraft_copy
     '';
   };
   w3c-login-bypass = pkgs.writeShellApplication {
@@ -433,29 +431,33 @@
       pkgs.rsync
     ];
     text = ''
-      export WINEPATH="$HOME/Games"
-      export WINEPREFIX="$WINEPATH/W3Champions"
-      export WINEARCH="win64"
-      export WINEDEBUG="-all"
-      export USER_HOME="$WINEPREFIX/drive_c/users/$USER"
-      export APPDATA="$USER_HOME/AppData"
-      export APPDATA_LOCAL="$APPDATA/Local"
-      export W3C_DATA="$APPDATA_LOCAL/com.w3champions.client"
-      export W3C_AUTH_DATA="''${W3C_AUTH_DATA:-}"
+      function w3c_login_bypass() {
+        export WINEPATH="$HOME/Games"
+        export WINEPREFIX="$WINEPATH/W3Champions"
+        export WINEARCH="win64"
+        export WINEDEBUG="-all"
+        export USER_HOME="$WINEPREFIX/drive_c/users/$USER"
+        export APPDATA="$USER_HOME/AppData"
+        export APPDATA_LOCAL="$APPDATA/Local"
+        export W3C_DATA="$APPDATA_LOCAL/com.w3champions.client"
+        export W3C_AUTH_DATA="''${W3C_AUTH_DATA:-}"
 
-      if [[ -z "$W3C_AUTH_DATA" ]]; then
-        echo "Error: W3C_AUTH_DATA is not set. Aborting."
-        exit 1
-      fi
+        if [[ -z "$W3C_AUTH_DATA" ]]; then
+          echo "Error: W3C_AUTH_DATA is not set. Aborting."
+          return
+        fi
 
-      if [[ ! -d "$W3C_AUTH_DATA" ]]; then
-        echo "Error: Source directory '$W3C_AUTH_DATA' does not exist. Aborting."
-        exit 1
-      fi
+        if [[ ! -d "$W3C_AUTH_DATA" ]]; then
+          echo "Error: Source directory '$W3C_AUTH_DATA' does not exist. Aborting."
+          return
+        fi
 
-      mkdir -p "$W3C_DATA"
+        mkdir -p "$W3C_DATA"
 
-      rsync -av --delete "$W3C_AUTH_DATA/" "$W3C_DATA/"
+        rsync -av --delete "$W3C_AUTH_DATA/" "$W3C_DATA/"
+      }
+
+      w3c_login_bypass
     '';
   };
 in {
