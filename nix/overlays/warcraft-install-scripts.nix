@@ -16,8 +16,8 @@
       export WARCRAFT_PATH="''${WARCRAFT_PATH:-}"
 
       warcraft-settings
-      "$WARCRAFT_PATH" warcraft-copy
-      "$W3C_AUTH_DATA" w3c-login-bypass
+      WARCRAFT_PATH="$WARCRAFT_PATH" warcraft-copy
+      W3C_AUTH_DATA="$W3C_AUTH_DATA" w3c-login-bypass
 
       lutris -i ${self}/W3Champions.yaml &
       INSTALL_PID="$!"
