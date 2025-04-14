@@ -15,6 +15,10 @@
       export W3C_AUTH_DATA="''${W3C_AUTH_DATA:-}"
       export WARCRAFT_PATH="''${WARCRAFT_PATH:-}"
 
+      warcraft-settings
+      "$WARCRAFT_PATH" warcraft-copy
+      "$W3C_AUTH_DATA" w3c-login-bypass
+
       lutris -i ${self}/W3Champions.yaml &
       INSTALL_PID="$!"
 
@@ -46,9 +50,6 @@
 
       WATCHDOG_PID=$!
 
-      wait "$INSTALL_PID"
-      INSTALL_EXIT_CODE="$?"
-
       wait "$WATCHDOG_PID"
 
       (
@@ -67,6 +68,9 @@
 
       wait "$WATCHDOG_PID"
 
+      wait "$INSTALL_PID"
+      INSTALL_EXIT_CODE="$?"
+
       if [ "$INSTALL_EXIT_CODE" -ne 0 ]; then
         echo "Failed to install W3Champions"
         exit 1
@@ -79,10 +83,6 @@
       fi
 
       echo "Finished installing W3Champions"
-
-      warcraft-settings
-      "$WARCRAFT_PATH" warcraft-copy
-      "$W3C_AUTH_DATA" w3c-login-bypass
     '';
   };
   install-webview2 = pkgs.writeShellApplication {
