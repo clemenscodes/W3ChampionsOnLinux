@@ -476,7 +476,7 @@ in {
         warcraft-install-scripts
       ];
     };
-    home-manager = lib.mkIf (config.home-manager.enable) {
+    home-manager = {
       users = {
         ${name} = {
           home = {
