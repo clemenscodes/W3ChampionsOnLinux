@@ -3,6 +3,14 @@
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
     };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs = {
+        nixpkgs = {
+          follows = "nixpkgs";
+        };
+      };
+    };
     umu = {
       url = "github:Open-Wine-Components/umu-launcher?dir=packaging/nix";
       inputs = {
@@ -33,7 +41,13 @@
         })
       ];
     };
+    inherit (pkgs) lib;
   in {
+    nixosModules = {
+      ${system} = {
+        default = import ./nix/modules {inherit self inputs pkgs lib;};
+      };
+    };
     packages = {
       ${system} = {
         inherit (pkgs) warcraft-install-scripts;
