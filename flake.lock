@@ -27,11 +27,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1744618716,
-        "narHash": "sha256-cfCzyv8B+KQ16HXsJcO1yk2gPyLVCTTGnv4hWFkfM5w=",
+        "lastModified": 1744622884,
+        "narHash": "sha256-qWGviIwRfambknEhmpCOopHEzXZBLub2hTESKoPN8tc=",
         "owner": "clemenscodes",
         "repo": "lutris-overlay",
-        "rev": "3f0074e61208238437a8af0bf922975d0d4bbf12",
+        "rev": "9ed55402278e495b617482074c47801af9207d85",
         "type": "github"
       },
       "original": {
