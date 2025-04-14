@@ -13,7 +13,6 @@
   inherit (self.packages.${system}) warcraft-scripts warcraft-install-scripts;
   inherit (cfg) name;
 in {
-  imports = [inputs.home-manager.nixosModules.home-manager];
   options = {
     w3champions = {
       warcraft = {
@@ -43,6 +42,14 @@ in {
     home-manager = {
       users = {
         ${name} = {
+          home = {
+            sessionVariables = {
+              WARCRAFT_WINEPREFIX = "$HOME/${cfg.prefix}";
+              WARCRAFT_HOME = let
+                prefix = config.home-manager.users.${name}.home.sessionVariables.WARCRAFT_WINEPREFIX;
+              in "${prefix}/drive_c/users/${name}/Documents/Warcraft III";
+            };
+          };
           xdg = {
             dataFile = {
               "lutris/runners/proton/proton-ge" = {
@@ -58,16 +65,6 @@ in {
                 '';
               };
             };
-          };
-          home = {
-            sessionVariables = {
-              WARCRAFT_WINEPREFIX = "$HOME/${cfg.prefix}";
-              WARCRAFT_HOME = let
-                prefix = config.home-manager.users.${name}.home.sessionVariables.WARCRAFT_WINEPREFIX;
-              in "${prefix}/drive_c/users/${name}/Documents/Warcraft III";
-            };
-          };
-          xdg = {
             desktopEntries = {
               kill-games = {
                 name = "Kill Games";

@@ -1,25 +1,5 @@
 {
   "nodes": {
-    "home-manager": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1744618730,
-        "narHash": "sha256-n3gN7aHwVRnnBZI64EDoKyJnWidNYJ0xezhqQtdjH2Q=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "85dd758c703ffbf9d97f34adcef3a898b54b4014",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "type": "github"
-      }
-    },
     "lutris-overlay": {
       "inputs": {
         "nixpkgs": [
@@ -58,7 +38,6 @@
     },
     "root": {
       "inputs": {
-        "home-manager": "home-manager",
         "lutris-overlay": "lutris-overlay",
         "nixpkgs": "nixpkgs"
       }
