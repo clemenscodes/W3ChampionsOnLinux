@@ -43,6 +43,22 @@ in {
     home-manager = {
       users = {
         ${name} = {
+          xdg = {
+            dataFile = {
+              "lutris/runners/proton/proton-ge" = {
+                source = pkgs.proton-ge-bin.steamcompattool;
+              };
+              "lutris/runners/wine.yml" = {
+                text = ''
+                  system:
+                    env:
+                      PROTON_VERB: run
+                  wine:
+                    version: proton-ge
+                '';
+              };
+            };
+          };
           home = {
             sessionVariables = {
               WARCRAFT_WINEPREFIX = "$HOME/${cfg.prefix}";
