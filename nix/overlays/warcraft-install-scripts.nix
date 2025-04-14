@@ -3,6 +3,62 @@
   pkgs,
   ...
 }: let
+  lutris-install-warcraft = pkgs.writeShellApplication {
+    name = "lutris-install-warcraft";
+    runtimeInputs = [
+      pkgs.lutris
+    ];
+    text = ''
+      lutris -i ${self}/W3Champions.yaml &
+      INSTALL_PID="$!"
+
+      (
+        set +e
+        echo "Monitoring webview2 installation process..."
+        while true; do
+          microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+          if [ "$microsoft_process_count" -gt 1 ]; then
+            echo "Waiting for WebView2 installation to finish..."
+            while true; do
+              microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+              echo "Microsoft processes running: $microsoft_process_count"
+              if [ "$microsoft_process_count" -eq 1 ]; then
+                echo "Killing all Microsoft processes"
+                pkill MicrosoftEdgeUp || true
+                break
+              fi
+              sleep 1
+              if [ "$microsoft_process_count" -eq 0 ]; then
+                break
+              fi
+            done
+            break
+          fi
+          sleep 1
+        done
+      ) &
+
+      WATCHDOG_PID=$!
+
+      wait "$INSTALL_PID"
+      INSTALL_EXIT_CODE="$?"
+
+      wait "$WATCHDOG_PID"
+
+      if [ "$INSTALL_EXIT_CODE" -ne 0 ]; then
+        echo "Failed to install W3Champions"
+        exit 1
+      fi
+
+      if [ ! -d "$WEBVIEW2_HOME" ]; then
+        echo "Failed installing WebView2 runtime... you might have the wrong Proton-GE version installed."
+        echo "Recommended is at least Proton-GE-9-26".
+        exit 1
+      fi
+
+      echo "Finished installing W3Champions"
+    '';
+  };
   install-webview2 = pkgs.writeShellApplication {
     name = "install-webview2";
     runtimeInputs = [
@@ -382,6 +438,7 @@ in {
       install-w3champions-legacy
       bonjour
       install-warcraft
+      lutris-install-warcraft
       warcraft-settings
       warcraft-copy
       w3c-login-bypass
