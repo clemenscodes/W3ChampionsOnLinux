@@ -51,6 +51,22 @@
 
       wait "$WATCHDOG_PID"
 
+      (
+        set +e
+        while true; do
+          microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+          if [ "$microsoft_process_count" -gt 0 ]; then
+            pkill Microsoft || true
+            break
+          fi
+          sleep 1
+        done
+      ) &
+
+      WATCHDOG_PID=$!
+
+      wait "$WATCHDOG_PID"
+
       if [ "$INSTALL_EXIT_CODE" -ne 0 ]; then
         echo "Failed to install W3Champions"
         exit 1
@@ -357,7 +373,9 @@
       export WINEPATH="$HOME/Games"
       export WINEPREFIX="$WINEPATH/W3Champions"
       export DOCUMENTS="$WINEPREFIX/drive_c/users/$USER/Documents"
+      export PROGRAM_FILES="$WINEPREFIX/drive_c/Program Files"
       export PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
+      export W3CHAMPIONS_HOME="$PROGRAM_FILES/W3Champions"
       export WARCRAFT_HOME="$PROGRAM_FILES86/Warcraft III"
       export WARCRAFT_CONFIG_HOME="$DOCUMENTS/Warcraft III"
 
