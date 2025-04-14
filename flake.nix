@@ -11,8 +11,8 @@
         };
       };
     };
-    umu = {
-      url = "github:Open-Wine-Components/umu-launcher?dir=packaging/nix";
+    lutris-overlay = {
+      url = "github:clemenscodes/lutris-overlay";
       inputs = {
         nixpkgs = {
           follows = "nixpkgs";
@@ -29,16 +29,8 @@
     pkgs = import nixpkgs {
       inherit system;
       overlays = [
-        (final: prev: {
-          umu-launcher = inputs.umu.packages.${system}.default.override {
-            extraPkgs = pkgs: [];
-            extraLibraries = pkgs: [];
-            withMultiArch = true;
-            withTruststore = true;
-            withDeltaUpdates = true;
-          };
-          inherit (import ./nix {inherit self pkgs;}) warcraft-install-scripts;
-        })
+        (inputs.lutris-overlay.overlays.lutris)
+        (self.overlays.${system}.default)
       ];
     };
     inherit (pkgs) lib;
@@ -48,18 +40,27 @@
         default = import ./nix/modules {inherit self inputs pkgs lib;};
       };
     };
+    overlays = {
+      ${system} = {
+        default = import ./nix/overlays {inherit self;};
+      };
+    };
     packages = {
       ${system} = {
-        inherit (pkgs) warcraft-install-scripts;
+        inherit (pkgs) warcraft-install-scripts warcraft-scripts;
         default = self.packages.${system}.warcraft-install-scripts;
       };
+    };
+    formatter = {
+      ${system} = pkgs.alejandra;
     };
     devShells = {
       ${system} = {
         default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            curl
-            warcraft-install-scripts
+          buildInputs = [
+            pkgs.curl
+            self.packages.${system}.warcraft-install-scripts
+            self.packages.${system}.warcraft-scripts
           ];
           shellHook = ''
             export WINEPATH="$HOME/Games"

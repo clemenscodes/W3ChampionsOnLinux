@@ -2,7 +2,7 @@
   self,
   pkgs,
   ...
-}: rec {
+}: let
   install-webview2 = pkgs.writeShellApplication {
     name = "install-webview2";
     runtimeInputs = [
@@ -373,50 +373,18 @@
       rsync -av --delete "$W3C_AUTH_DATA/" "$W3C_DATA/"
     '';
   };
-  focus-warcraft-game = pkgs.writeShellApplication {
-    name = "focus-warcraft-game";
-    runtimeInputs = [
-      pkgs.hyprland
-      pkgs.socat
-      pkgs.jq
-      pkgs.libnotify
-      warcraft-mode-start
-      warcraft-mode-stop
+in {
+  warcraft-install-scripts = pkgs.symlinkJoin {
+    name = "warcraft-install-scripts";
+    paths = [
+      install-webview2
+      install-w3champions
+      install-w3champions-legacy
+      bonjour
+      install-warcraft
+      warcraft-settings
+      warcraft-copy
+      w3c-login-bypass
     ];
-    text = ''
-      SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[] | .width')"
-      SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
-      SCREEN_CENTER_X=$((SCREEN_WIDTH / 2))
-      SCREEN_CENTER_Y=$((SCREEN_HEIGHT / 2))
-
-      socat -U - UNIX-CONNECT:"$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
-        ADDRESS="$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "Warcraft III") | .address' | head -n1)"
-        if [ -n "$ADDRESS" ]; then
-          WARCRAFT_ADDRESS="$ADDRESS"
-        fi
-        case "$line" in
-          fullscreen*)
-            if [ "$(hyprctl activewindow)" = "Invalid" ]; then
-              notify-send --expire-time 3000 "W3Champions match started!" --icon "${self}/assets/W3Champions.png"
-              sleep 6
-              warcraft-mode-start
-              hyprctl --batch "dispatch workspace 3 ; dispatch fullscreen 0 ; dispatch movecursor $SCREEN_CENTER_X $SCREEN_CENTER_Y"
-            fi
-            ;;
-          closewindow*)
-            address="$(echo "$line" | awk -F '>>' '{print $2}')"
-            if [ "0x$address" = "$WARCRAFT_ADDRESS" ]; then
-              warcraft-mode-stop
-              hyprctl --batch "dispatch workspace 2 ; dispatch movecursor 1350 330"
-            fi
-            ;;
-          openwindow*)
-            case "$line" in
-              *Warcraft*) WARCRAFT_ADDRESS="$(echo "$line" | awk -F '>>' '{print $2}' | awk -F ',' '{print $1}')" ;;
-            esac
-            ;;
-        esac
-      done
-    '';
   };
 }

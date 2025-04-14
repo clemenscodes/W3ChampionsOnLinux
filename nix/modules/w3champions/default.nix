@@ -9,10 +9,23 @@
   system,
   ...
 }: {
-  imports = [(import ./warcraft {inherit self inputs pkgs lib;})];
+  imports = [
+    (import ./warcraft {
+      inherit
+        self
+        inputs
+        pkgs
+        lib
+        ;
+    })
+  ];
   options = {
     w3champions = {
-      enable = lib.mkEnableOption "Enable W3Champions" // {default = false;};
+      enable =
+        lib.mkEnableOption "Enable W3Champions"
+        // {
+          default = false;
+        };
       name = lib.mkOption {
         type = lib.types.str;
         example = "player";
