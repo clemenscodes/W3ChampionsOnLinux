@@ -414,6 +414,7 @@
         echo "Warcraft III is not installed..."
         if [ -n "$WARCRAFT_PATH" ]; then
           echo "Copying $WARCRAFT_PATH to $WARCRAFT_HOME"
+          mkdir -p "$PROGRAM_FILES86"
           cp -r "$WARCRAFT_PATH" "$WARCRAFT_HOME"
           rm -rf "$WARCRAFT_HOME/_retail_/webui" || true
           echo "Finished installing Warcraft III"
