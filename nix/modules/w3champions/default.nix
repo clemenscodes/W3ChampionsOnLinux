@@ -1,4 +1,5 @@
 {
+  self,
   inputs,
   pkgs,
   lib,
@@ -8,7 +9,7 @@
   system,
   ...
 }: {
-  imports = [(import ./warcraft {inherit inputs pkgs lib;})];
+  imports = [(import ./warcraft {inherit self inputs pkgs lib;})];
   options = {
     w3champions = {
       enable = lib.mkEnableOption "Enable W3Champions" // {default = false;};
