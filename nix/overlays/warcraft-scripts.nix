@@ -69,25 +69,7 @@
 
       kill-games
 
-      LUTRIS_SKIP_INIT=1 lutris lutris:rungame/battlenet &
-      GAME_PID="$!"
-
-      (
-        set +e
-        while true; do
-          PID=$(hyprctl clients -j | jq -r '.[] | select(.class == "steam_app_default" and .title == "") | .pid' | head -n 1)
-          if [ -n "$PID" ]; then
-            sleep 0.1
-            kill "$PID"
-            break
-          fi
-        done
-      ) &
-
-      WATCHDOG_PID=$!
-
-      wait "$WATCHDOG_PID"
-      wait "$GAME_PID"
+      LUTRIS_SKIP_INIT=1 lutris lutris:rungame/battlenet
     '';
   };
   w3champions = pkgs.writeShellApplication {
