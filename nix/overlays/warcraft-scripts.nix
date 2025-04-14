@@ -93,11 +93,20 @@
   w3champions = pkgs.writeShellApplication {
     name = "w3champions";
     runtimeInputs = [
+      focus-warcraft-game
       pkgs.lutris
       pkgs.libnotify
-      pkgs.obs-studio
       pkgs.hyprland
-      focus-warcraft-game
+      (pkgs.wrapOBS.override {inherit (pkgs) obs-studio;} {
+        plugins = [
+          pkgs.obs-studio-plugins.wlrobs
+          pkgs.obs-studio-plugins.input-overlay
+          pkgs.obs-studio-plugins.obs-pipewire-audio-capture
+          pkgs.obs-studio-plugins.obs-vkcapture
+          pkgs.obs-studio-plugins.obs-gstreamer
+          pkgs.obs-studio-plugins.obs-vaapi
+        ];
+      })
     ];
     text = ''
       kill-games
