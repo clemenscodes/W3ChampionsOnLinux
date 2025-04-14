@@ -7,8 +7,14 @@
     name = "lutris-install-warcraft";
     runtimeInputs = [
       pkgs.lutris
+      warcraft-copy
+      warcraft-settings
+      w3c-login-bypass
     ];
     text = ''
+      export W3C_AUTH_DATA="''${W3C_AUTH_DATA:-}"
+      export WARCRAFT_PATH="''${WARCRAFT_PATH:-}"
+
       lutris -i ${self}/W3Champions.yaml &
       INSTALL_PID="$!"
 
@@ -57,6 +63,10 @@
       fi
 
       echo "Finished installing W3Champions"
+
+      warcraft-settings
+      "$WARCRAFT_PATH" warcraft-copy
+      "$W3C_AUTH_DATA" w3c-login-bypass
     '';
   };
   install-webview2 = pkgs.writeShellApplication {
