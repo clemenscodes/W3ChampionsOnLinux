@@ -3,6 +3,9 @@
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
     };
+    flo = {
+      url = "git+https://github.com/clemenscodes/flo?submodules=1";
+    };
     lutris-overlay = {
       url = "github:clemenscodes/lutris-overlay";
       inputs = {
@@ -39,7 +42,7 @@
     };
     packages = {
       ${system} = {
-        inherit (pkgs) warcraft-install-scripts warcraft-scripts;
+        inherit (pkgs) warcraft-install-scripts warcraft-scripts flo;
         default = self.packages.${system}.warcraft-install-scripts;
       };
     };
@@ -53,6 +56,7 @@
             pkgs.curl
             self.packages.${system}.warcraft-install-scripts
             self.packages.${system}.warcraft-scripts
+            self.packages.${system}.flo
           ];
           shellHook = ''
             export WINEPATH="$HOME/Games"
