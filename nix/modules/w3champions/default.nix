@@ -40,10 +40,10 @@ in {
     };
     environment = {
       systemPackages = [
-        protonplus
         flo-toolkit
         warcraft-scripts
         warcraft-install-scripts
+        pkgs.protonplus
       ];
     };
     home-manager = {
