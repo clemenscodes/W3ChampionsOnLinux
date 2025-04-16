@@ -58,7 +58,6 @@
             pkgs.protonplus
             self.packages.${system}.warcraft-install-scripts
             self.packages.${system}.warcraft-scripts
-            self.packages.${system}.flo-toolkit
           ];
           shellHook = ''
             export WINEPATH="$HOME/Games"
