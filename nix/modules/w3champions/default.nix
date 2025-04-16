@@ -10,7 +10,7 @@
   ...
 }: let
   cfg = config.w3champions;
-  inherit (self.packages.${system}) warcraft-scripts warcraft-install-scripts;
+  inherit (self.packages.${system}) warcraft-scripts warcraft-install-scripts flo-toolkit;
   inherit (cfg) name;
 in {
   options = {
@@ -40,6 +40,7 @@ in {
     };
     environment = {
       systemPackages = [
+        flo-toolkit
         warcraft-scripts
         warcraft-install-scripts
       ];

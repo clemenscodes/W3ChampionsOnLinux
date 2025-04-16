@@ -26,6 +26,7 @@
       overlays = [
         (inputs.lutris-overlay.overlays.lutris)
         (self.overlays.${system}.default)
+        (inputs.flo.overlays.default)
       ];
     };
     inherit (pkgs) lib;
@@ -42,7 +43,7 @@
     };
     packages = {
       ${system} = {
-        inherit (pkgs) warcraft-install-scripts warcraft-scripts flo;
+        inherit (pkgs) warcraft-install-scripts warcraft-scripts flo-toolkit;
         default = self.packages.${system}.warcraft-install-scripts;
       };
     };
@@ -56,7 +57,7 @@
             pkgs.curl
             self.packages.${system}.warcraft-install-scripts
             self.packages.${system}.warcraft-scripts
-            self.packages.${system}.flo
+            self.packages.${system}.flo-toolkit
           ];
           shellHook = ''
             export WINEPATH="$HOME/Games"
