@@ -57,17 +57,6 @@ in {
             };
           };
           xdg = {
-            dataFile = {
-              "lutris/runners/wine.yml" = {
-                text = ''
-                  system:
-                    env:
-                      PROTON_VERB: run
-                  wine:
-                    version: ge-proton
-                '';
-              };
-            };
             desktopEntries = {
               kill-games = {
                 name = "Kill Games";
