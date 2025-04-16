@@ -99,7 +99,7 @@
         obs --disable-shutdown-check --multi --startreplaybuffer &
       fi
 
-      LUTRIS_SKIP_INIT=1 lutris lutris:rungame/W3Champions &
+      LUTRIS_SKIP_INIT=1 lutris lutris:rungame/w3champions &
       GAME_PID="$!"
 
       focus-warcraft-game &
