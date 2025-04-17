@@ -65,11 +65,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1744913800,
-        "narHash": "sha256-g9zsqd2JGggbwcG4OgwY1X4pLGMyIRJvayw/mygmQ58=",
+        "lastModified": 1744914078,
+        "narHash": "sha256-UfgfWQy1N3yoPJ6y6TLK5a6bUyhQVohdjdkYbtcuF8I=",
         "ref": "refs/heads/develop",
-        "rev": "a208139277a00023ea1920e7789dc1cad7de1285",
-        "revCount": 723,
+        "rev": "79dd4c874a950ac7d8ca03b1fd089be54278d2ab",
+        "revCount": 724,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/clemenscodes/flo"
