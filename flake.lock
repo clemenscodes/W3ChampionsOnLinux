@@ -65,11 +65,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1744986096,
-        "narHash": "sha256-r5m1HJFAI0QZPaJQeWqtNgByeZBOn2MkXJsONr2szhA=",
+        "lastModified": 1744998609,
+        "narHash": "sha256-lkKxVktEJtIul1GMvTNqn+Zd8+eE9ZFvW1HojVPwtQo=",
         "ref": "refs/heads/develop",
-        "rev": "b93c68a67f31a9fcbc77e094f89e6e09756fdd27",
-        "revCount": 750,
+        "rev": "bda0c5026c2ef4de3f571f44553eb3dcb695d59b",
+        "revCount": 751,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/clemenscodes/flo"
@@ -148,11 +148,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1744463964,
-        "narHash": "sha256-LWqduOgLHCFxiTNYi3Uj5Lgz0SR+Xhw3kr/3Xd0GPTM=",
+        "lastModified": 1744932701,
+        "narHash": "sha256-fusHbZCyv126cyArUwwKrLdCkgVAIaa/fQJYFlCEqiU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "2631b0b7abcea6e640ce31cd78ea58910d31e650",
+        "rev": "b024ced1aac25639f8ca8fdfc2f8c4fbd66c48ef",
         "type": "github"
       },
       "original": {
