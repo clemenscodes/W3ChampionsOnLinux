@@ -195,11 +195,8 @@ in {
                   windowrule = content game,class:(warcraft iii.exe),title:(Warcraft III)
                   windowrule = workspace 2,class:(steam_app_default),title:(Battle.net)
                   windowrule = workspace 2,class:(steam_app_default),title:(W3Champions)
-                  windowrule = workspace 2,class:(steam_app_default),title:()
                   windowrule = workspace 2,class:(steam_app_0),title:(Battle.net)
                   windowrule = workspace 2,class:(steam_app_0),title:(W3Champions)
-                  windowrule = workspace 2,class:(steam_app_0),title:()
-                  windowrule = workspace 2,class:(explorer.exe),title:()
                   windowrule = workspace 3,class:(steam_app_default),title:(Warcraft III)
                   windowrule = workspace 3,class:(steam_app_0),title:(Warcraft III)
                   windowrule = workspace 2,class:(battle.net.exe),title:(Battle.net)
@@ -220,15 +217,6 @@ in {
                   windowrule = noinitialfocus,class:(steam_app_default),title:(Warcraft III)
                   windowrule = noinitialfocus,class:(steam_app_0),title:(Warcraft III)
                   windowrule = noinitialfocus,class:(warcraft iii.exe),title:(Warcraft III)
-                  windowrule = noinitialfocus,class:(steam_app_default),title:()
-                  windowrule = noinitialfocus,class:(steam_app_0),title:()
-                  windowrule = noinitialfocus,class:(explorer.exe),title:()
-                  windowrule = opacity 0,class:(steam_app_default),title:()
-                  windowrule = opacity 0,class:(steam_app_0),title:()
-                  windowrule = opacity 0,class:(explorer.exe),title:()
-                  windowrule = move 50%% 50%,class:(steam_app_default),title:()
-                  windowrule = move 50%% 50%,class:(steam_app_0),title:()
-                  windowrule = move 50% 50%,class:(explorer.exe),title:()
                   windowrule = workspace 1,class:^(com\.obsproject\.Studio)$
                   windowrule = noinitialfocus,class:^(com\.obsproject\.Studio)$
                 '';
