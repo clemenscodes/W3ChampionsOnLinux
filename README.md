@@ -135,6 +135,10 @@ First install lutris.
 
     pacman -S lutris
 
+> [!CAUTION]
+> Make sure to download the latest lutris release form [here](https://github.com/lutris/lutris/releases) if you run into any issues
+> You might have problems running the latest Proton-GE if you run an outdated version of lutris
+
 Then start lutris and let it download its runtime and dependencies.
 By default, lutris will download and use wine-ge-8-26.
 This version however does _NOT_ work for W3Champions!
@@ -159,6 +163,10 @@ You do however have to edit the system options.
 Select the system options, toggle the `Advanced` switch, scroll down and add an environment variable.
 
 ![Environment variable](./assets/system-env.png)
+
+> [!CAUTION]
+> It might be required to add the environment variable `WINE_SIMULATE_WRITECOPY=1` to run Battle.net with Proton-GE
+> Try setting this if you encounter any issues with Battle.net
 
 ## Lutris installation
 
@@ -310,17 +318,14 @@ And then paste the copied directory from the USB stick to `$HOME/Games/W3Champio
 > The path `/mnt/com.w3champions.client` assumes that you mounted the USB drive at `/mnt` and that it contains the directory there.
 > Adjust this to however you have to.
 
-### Postinstallation steps
-
-You can now launch W3Champions, and it should actually work.
-When it boots up the first time, W3Champions will launch the Warcraft III game in offline mode and configure it for use by W3Champions.
+### Postinstallation steps (REQUIRED - Do not skip!)
 
 > [!IMPORTANT]  
+> You can now launch W3Champions, and it should actually work.
 > Do not interact with the launched Warcraft III window.
-
-W3Champions will proceed to install Bonjour for the first time and join a test game on LAN in Warcraft III.
-This should work without any actions. On subsequent launcher startups though, we have to restart the `Bonjour Service` for some reason.
-To automate this, you can write a batch file somewhere with this content and save it.
+> W3Champions will proceed to install Bonjour for the first time and join a test game on LAN in Warcraft III.
+> This should work without any actions. On subsequent launcher startups though, we have to restart the `Bonjour Service` for some reason.
+> To automate this, you can should write a batch file somewhere with this content and save it.
 
 ```batch
 C:
