@@ -3,9 +3,6 @@
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
     };
-    flo = {
-      url = "git+https://github.com/clemenscodes/flo?submodules=1";
-    };
     lutris-overlay = {
       url = "github:clemenscodes/lutris-overlay";
       inputs = {
@@ -26,7 +23,6 @@
       overlays = [
         (inputs.lutris-overlay.overlays.lutris)
         (self.overlays.${system}.default)
-        (inputs.flo.overlays.default)
       ];
     };
     inherit (pkgs) lib;
@@ -43,7 +39,7 @@
     };
     packages = {
       ${system} = {
-        inherit (pkgs) warcraft-install-scripts warcraft-scripts flo-toolkit;
+        inherit (pkgs) warcraft-install-scripts warcraft-scripts;
         default = self.packages.${system}.warcraft-install-scripts;
       };
     };

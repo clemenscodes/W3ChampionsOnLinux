@@ -13,7 +13,6 @@
   inherit (self.packages.${system}) warcraft-scripts warcraft-install-scripts;
   inherit (cfg) name;
 in {
-  imports = [(import ./flo {inherit self inputs pkgs lib;})];
   options = {
     w3champions = {
       enable = lib.mkEnableOption "Enable W3Champions" // {default = false;};
