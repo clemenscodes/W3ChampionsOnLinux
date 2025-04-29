@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1745154629,
-        "narHash": "sha256-8W1rQYPvJMLGRMQy0wxY5QG8/eFl84nLnrMm22uUkVc=",
+        "lastModified": 1745171770,
+        "narHash": "sha256-ltkKwh8QcaLy3wJrDvNkC3U9MXOBOUQT1mKazcJbPCY=",
         "owner": "clemenscodes",
         "repo": "lutris-overlay",
-        "rev": "ef8d056a4e730086c7005367057558b26860324d",
+        "rev": "4a340bdb522758b14d1ab9837c684b71a27443c4",
         "type": "github"
       },
       "original": {
@@ -22,11 +22,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1744932701,
-        "narHash": "sha256-fusHbZCyv126cyArUwwKrLdCkgVAIaa/fQJYFlCEqiU=",
+        "lastModified": 1745794561,
+        "narHash": "sha256-T36rUZHUART00h3dW4sV5tv4MrXKT7aWjNfHiZz7OHg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b024ced1aac25639f8ca8fdfc2f8c4fbd66c48ef",
+        "rev": "5461b7fa65f3ca74cef60be837fd559a8918eaa0",
         "type": "github"
       },
       "original": {
