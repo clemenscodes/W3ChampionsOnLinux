@@ -72,6 +72,21 @@
       LUTRIS_SKIP_INIT=1 lutris lutris:rungame/battlenet
     '';
   };
+  warcraft = pkgs.writeShellApplication {
+    name = "warcraft";
+    runtimeInputs = [
+      pkgs.lutris
+      pkgs.libnotify
+      kill-games
+    ];
+    text = ''
+      notify-send "Starting Warcraft III - Offline"
+
+      kill-games
+
+      LUTRIS_SKIP_INIT=1 lutris lutris:rungame/warcraft
+    '';
+  };
   w3champions = pkgs.writeShellApplication {
     name = "w3champions";
     runtimeInputs = [

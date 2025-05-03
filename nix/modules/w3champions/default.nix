@@ -92,7 +92,7 @@ in {
                 categories = ["Game"];
                 genericName = "The godfather of RTS";
                 icon = "${self}/assets/Warcraft.png";
-                exec = "${warcraft-scripts}/bin/battlenet";
+                exec = "${warcraft-scripts}/bin/warcraft";
                 terminal = false;
               };
             };
