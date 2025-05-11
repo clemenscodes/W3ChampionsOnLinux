@@ -200,15 +200,15 @@ It should create the game as follows.
 
 First, we install the WebView2 runtime.
 
-The installer can be downloaded from [here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/?ch=1&form=MA13LH#download).
-
-![Download WebView2](./assets/download-webview2.png)
-
-Select the `Evergreen Standalone Installer` for the `x64` architecture.
+> [!IMPORTANT]
+> Very recent versions of WebView2 will still render a blackscreen.
+> Currently, only version 1.09 is supported and confirmed to be working with W3Champions.
+> The runtime installer can be downloaded from this repositories release page [here](https://github.com/clemenscodes/W3ChampionsOnLinux/releases).
+> Alternatively, download it from [archive.org](https://archive.org/download/microsoft-edge-web-view-2-runtime-installer-v109.0.1518.78/MicrosoftEdgeWebView2RuntimeInstallerX64.exe)
 
 You can also download the installer using `curl`.
 
-    curl -L "https://go.microsoft.com/fwlink/?linkid=2124701" --output "$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+    curl -L "https://github.com/clemenscodes/W3ChampionsOnLinux/releases/download/proton-ge-9-27/MicrosoftEdgeWebView2RuntimeInstallerX64.exe" --output "$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
 
 ![WebView2 download](./assets/download-result-webview2.png)
 
