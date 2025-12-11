@@ -496,6 +496,7 @@ in {
       focus-warcraft-game
       battlenet
       w3champions
+      warcraft
       warcraft-mode-start
       warcraft-mode-stop
       warcraft-chat-open

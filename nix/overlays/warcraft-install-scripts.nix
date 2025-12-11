@@ -3,6 +3,250 @@
   pkgs,
   ...
 }: let
+  setup-warcraft-wine = pkgs.writeShellApplication {
+    name = "setup-warcraft-wine";
+    runtimeInputs = [
+      pkgs.wine
+      pkgs.winetricks-compat
+      pkgs.winetricks
+    ];
+    text = ''
+      echo "Setting up wine prefix for Warcraft III"
+      WINEPATH="$HOME/Games"
+      WINEPREFIX="$WINEPATH/bnet"
+      mkdir -p "$WINEPREFIX"
+      winetricks dxvk
+    '';
+  };
+  cleanup-warcraft-wine = pkgs.writeShellApplication {
+    name = "cleanup-warcraft-wine";
+    text = ''
+      echo "Cleaning up wine for Warcraft III"
+      for proc in main Warcraft wine Microsoft srt-bwrap exe Cr mDNS; do
+        pkill "$proc" || true
+      done
+    '';
+  };
+  download-battlenet = pkgs.writeShellApplication {
+    name = "download-battlenet";
+    runtimeInputs = [
+      pkgs.curl
+    ];
+    text = ''
+      echo "Downloading Battle.net"
+      BNET_SETUP_EXE="https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe"
+      BNET_DOWNLOAD_URL="$HOME/Downloads/Battle.net-Setup.exe"
+      mkdir -p "$HOME/Downloads"
+      curl -L "$BNET_DOWNLOAD_URL" --output "$BNET_SETUP_EXE"
+    '';
+  };
+  install-battlenet = pkgs.writeShellApplication {
+    name = "install-battlenet";
+    runtimeInputs = [
+      download-battlenet
+      cleanup-warcraft-wine
+      pkgs.wine
+    ];
+    text = ''
+      echo "Installing Battle.net"
+      WINEPATH="$HOME/Games"
+      WINEPREFIX="$WINEPATH/bnet"
+      BNET_SETUP_EXE="$HOME/Downloads/Battle.net-Setup.exe"
+      if [ ! -f "$BNET_SETUP_EXE" ]; then
+        download-battlenet
+      fi
+      mkdir -p "$WINEPREFIX"
+      cleanup-warcraft-wine
+      wine "$BNET_SETUP_EXE"
+    '';
+  };
+  run-battlenet = pkgs.writeShellApplication {
+    name = "install-battlenet";
+    runtimeInputs = [
+      cleanup-warcraft-wine
+      pkgs.wine
+    ];
+    text = ''
+      echo "Running Battle.net"
+      WINEPATH="$HOME/Games"
+      WINEPREFIX="$WINEPATH/bnet"
+      PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
+      BNET_HOME="$PROGRAM_FILES86/Battle.net"
+      BNET_EXE="$BNET_HOME/Battle.net.exe"
+      cleanup-warcraft-wine
+      wine "$BNET_EXE"
+    '';
+  };
+  download-webview = pkgs.writeShellApplication {
+    name = "download-webview";
+    runtimeInputs = [
+      pkgs.curl
+    ];
+    text = ''
+      echo "Downloading WebView2"
+      WEBVIEW2_SETUP_EXE="$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+      WEBVIEW2_DOWNLOAD_URL="https://github.com/clemenscodes/W3ChampionsOnLinux/releases/download/proton-ge-9-27/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+      mkdir -p "$HOME/Downloads"
+      curl -L "$WEBVIEW2_DOWNLOAD_URL" --output "$WEBVIEW2_SETUP_EXE"
+    '';
+  };
+  install-webview = pkgs.writeShellApplication {
+    name = "install-webview";
+    runtimeInputs = [
+      download-webview
+      cleanup-warcraft-wine
+      pkgs.wine
+    ];
+    text = ''
+      echo "Installing WebView2"
+      WINEPATH="$HOME/Games"
+      WINEPREFIX="$WINEPATH/bnet"
+      WEBVIEW2_SETUP_EXE="$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+
+      PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
+      WEBVIEW2_HOME="$PROGRAM_FILES86/Microsoft/EdgeCore"
+
+      mkdir -p "$WINEPREFIX"
+
+      if [ ! -d "$WEBVIEW2_HOME" ]; then
+        if [ ! -f "$WEBVIEW2_SETUP_EXE" ]; then
+          download-webview
+        fi
+
+        echo "Installing WebView2 runtime... sit back and wait until it finishes."
+        echo "There should be no errors."
+        echo "If an error occurs, you might have an incompatible GPU or Vulkan driver."
+        cleanup-warcraft-wine
+        wine "$WEBVIEW2_SETUP_EXE" &
+        INSTALL_PID="$!"
+
+        (
+          set +e
+          echo "Monitoring webview2 installation process..."
+          while true; do
+            microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+            if [ "$microsoft_process_count" -gt 1 ]; then
+              echo "Waiting for WebView2 installation to finish..."
+              while true; do
+                microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+                echo "Microsoft processes running: $microsoft_process_count"
+                if [ "$microsoft_process_count" -eq 1 ]; then
+                  echo "Killing all Microsoft processes"
+                  pkill MicrosoftEdgeUp || true
+                  break
+                fi
+                sleep 1
+                if [ "$microsoft_process_count" -eq 0 ]; then
+                  break
+                fi
+              done
+              break
+            fi
+            sleep 1
+          done
+        ) &
+
+        WATCHDOG_PID=$!
+
+        wait "$INSTALL_PID"
+        INSTALL_EXIT_CODE="$?"
+
+        wait "$WATCHDOG_PID"
+
+        if [ "$INSTALL_EXIT_CODE" -ne 0 ]; then
+          echo "WebView2 installer failed with exit code $INSTALL_EXIT_CODE"
+          exit 1
+        fi
+
+        if [ ! -d "$WEBVIEW2_HOME" ]; then
+          echo "Failed installing WebView2 runtime... you might have the wrong wine version installed."
+          echo "Recommended is at least wine 10.16"
+          exit 1
+        fi
+
+        echo "Finished installing WebView2 runtime"
+        echo "Fixing black screens for windows using the WebView2 runtime..."
+        echo "Setting msedgewebview2.exe to Windows 7..."
+
+        (
+          set +e
+          while true; do
+            microsoft_process_count=$(pgrep -la Microsoft | wc -l)
+            if [ "$microsoft_process_count" -gt 0 ]; then
+              pkill Microsoft || true
+              break
+            fi
+            sleep 1
+          done
+        ) &
+
+        WATCHDOG_PID=$!
+
+        cleanup-warcraft-wine
+        wine "$WINEPREFIX/drive_c/windows/regedit.exe" /S "${self}/msedgewebview2.exe.reg" &
+        REGEDIT_PID="$!"
+
+        wait "$REGEDIT_PID"
+        wait "$WATCHDOG_PID"
+
+        echo "Done. WebView2 applications should render properly now."
+      fi
+    '';
+  };
+  download-w3c = pkgs.writeShellApplication {
+    name = "download-w3c";
+    runtimeInputs = [
+      pkgs.curl
+    ];
+    text = ''
+      echo "Downloading W3Champions"
+      W3CHAMPIONS_SETUP_EXE="$HOME/Downloads/W3Champions_latest_x64_en-US.msi"
+      W3CHAMPIONS_DOWNLOAD_URL="https://update-service.w3champions.com/api/launcher-e"
+      mkdir -p "$HOME/Downloads"
+      curl -L "$W3CHAMPIONS_DOWNLOAD_URL" --output "$W3CHAMPIONS_SETUP_EXE"
+    '';
+  };
+  install-w3c = pkgs.writeShellApplication {
+    name = "install-w3c";
+    runtimeInputs = [
+      download-w3c
+      cleanup-warcraft-wine
+      pkgs.wine
+    ];
+    text = ''
+      echo "Installing W3Champions"
+      WINEPATH="$HOME/Games"
+      WINEPREFIX="$WINEPATH/bnet"
+      W3CHAMPIONS_SETUP_EXE="$HOME/Downloads/W3Champions_latest_x64_en-US.msi"
+      if [ ! -f "$W3CHAMPIONS_SETUP_EXE" ]; then
+        download-w3c
+      fi
+      mkdir -p "$WINEPREFIX"
+
+      cleanup-warcraft-wine
+      wine "$W3CHAMPIONS_SETUP_EXE"
+    '';
+  };
+  run-w3c = pkgs.writeShellApplication {
+    name = "run-w3c";
+    runtimeInputs = [
+      install-w3c
+      cleanup-warcraft-wine
+      pkgs.wine
+    ];
+    text = ''
+      echo "Running W3Champions"
+      WINEPATH="$HOME/Games"
+      WINEPREFIX="$WINEPATH/bnet"
+      PROGRAM_FILES86="$WINEPREFIX/drive_c/Program Files (x86)"
+      W3CHAMPIONS_EXE="$PROGRAM_FILES86/W3Champions/W3Champions.exe"
+      if [ ! -f "$W3CHAMPIONS_EXE" ]; then
+        install-w3c
+      fi
+      cleanup-warcraft-wine
+      wine "$W3CHAMPIONS_EXE"
+    '';
+  };
   lutris-install-warcraft = pkgs.writeShellApplication {
     name = "lutris-install-warcraft";
     runtimeInputs = [
@@ -243,46 +487,6 @@
       fi
     '';
   };
-  install-w3champions-legacy = pkgs.writeShellApplication {
-    name = "install-w3champions-legacy";
-    runtimeInputs = [
-      pkgs.curl
-      pkgs.umu-launcher
-      pkgs.zenity
-    ];
-    text = ''
-      export PROTON_VERB=run
-
-      export WINEARCH="win64"
-      export WINEDEBUG="-all"
-      export WINEPREFIX=$HOME/Games/W3Champions
-
-      export DOWNLOADS="$WINEPREFIX/drive_c/users/$USER/Downloads"
-      export APPDATA="$WINEPREFIX/drive_c/users/$USER/AppData"
-      export APPDATA_LOCAL="$APPDATA/Local"
-      export W3C_LEGACY_EXE="$APPDATA_LOCAL/Programs/w3champions/w3champions.exe"
-      export W3C_LEGACY_SETUP_EXE="$DOWNLOADS/w3c-setup.exe"
-      export W3C_LEGACY_SETUP_URL="https://update-service.w3champions.com/api/launcher/win"
-
-      if [ ! -f "$W3C_LEGACY_EXE" ]; then
-        if [ ! -f "$W3C_LEGACY_SETUP_EXE" ]; then
-          echo "Downloading W3Champions installer..."
-          mkdir -p "$DOWNLOADS"
-          curl -L "$W3C_LEGACY_SETUP_URL" -o "$W3C_LEGACY_SETUP_EXE"
-        fi
-
-        echo "Installing legacy W3Champions..."
-        umu-run "$W3C_LEGACY_SETUP_EXE"
-
-        if [ ! -f "$W3C_LEGACY_EXE" ]; then
-          echo "Failed installing legacy W3Champions."
-          exit 1
-        fi
-
-        echo "Finished installing legacy W3Champions."
-      fi
-    '';
-  };
   bonjour = pkgs.writeShellApplication {
     name = "bonjour";
     runtimeInputs = [
@@ -464,9 +668,18 @@ in {
   warcraft-install-scripts = pkgs.symlinkJoin {
     name = "warcraft-install-scripts";
     paths = [
+      setup-warcraft-wine
+      cleanup-warcraft-wine
+      download-battlenet
+      install-battlenet
+      run-battlenet
+      install-webview
+      download-webview
       install-webview2
+      install-w3c
+      download-w3c
+      run-w3c
       install-w3champions
-      install-w3champions-legacy
       bonjour
       install-warcraft
       lutris-install-warcraft

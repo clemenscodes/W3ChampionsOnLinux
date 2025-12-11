@@ -3,8 +3,13 @@
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
     };
-    flo = {
-      url = "git+https://github.com/clemenscodes/flo?submodules=1";
+    wine-overlays = {
+      url = "github:clemenscodes/wine-overlays";
+      inputs = {
+        nixpkgs = {
+          follows = "nixpkgs";
+        };
+      };
     };
     lutris-overlay = {
       url = "github:clemenscodes/lutris-overlay";
@@ -25,8 +30,8 @@
       inherit system;
       overlays = [
         (inputs.lutris-overlay.overlays.lutris)
+        (inputs.wine-overlays.overlays.wine)
         (self.overlays.${system}.default)
-        (inputs.flo.overlays.default)
       ];
     };
     inherit (pkgs) lib;
@@ -43,7 +48,7 @@
     };
     packages = {
       ${system} = {
-        inherit (pkgs) warcraft-install-scripts warcraft-scripts flo-toolkit;
+        inherit (pkgs) warcraft-install-scripts warcraft-scripts;
         default = self.packages.${system}.warcraft-install-scripts;
       };
     };
@@ -56,12 +61,15 @@
           buildInputs = [
             pkgs.curl
             pkgs.protonplus
+            pkgs.wine # using custom wine from overlay
+            pkgs.winetricks-compat # symlinked wine from overlay to wine64
+            pkgs.winetricks
             self.packages.${system}.warcraft-install-scripts
             self.packages.${system}.warcraft-scripts
           ];
           shellHook = ''
             export WINEPATH="$HOME/Games"
-            export WINEPREFIX="$WINEPATH/W3Champions"
+            export WINEPREFIX="$WINEPATH/bnet"
             export WINEARCH="win64"
             export WINEDEBUG="-all"
 
@@ -74,6 +82,9 @@
             export APPDATA="$WINEPREFIX/drive_c/users/$USER/AppData"
             export APPDATA_LOCAL="$APPDATA/Local"
             export APPDATA_ROAMING="$APPDATA/Roaming"
+
+            export BNET_HOME="$PROGRAM_FILES86/Battle.net"
+            export BNET="$BNET_HOME/Battle.net.exe"
 
             export WARCRAFT_HOME="$PROGRAM_FILES86/Warcraft III"
             export WARCRAFT_CONFIG_HOME="$DOCUMENTS/Warcraft III"
