@@ -1,25 +1,5 @@
 {
   "nodes": {
-    "lutris-overlay": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1754254832,
-        "narHash": "sha256-/KyDOuSqae8QeyRega3wLtQdiA4v4JkBnaMOn3fiYok=",
-        "owner": "clemenscodes",
-        "repo": "lutris-overlay",
-        "rev": "f3a7709e8cf2c226946693d1d948af4ea922094e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "clemenscodes",
-        "repo": "lutris-overlay",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1765186076,
@@ -38,7 +18,6 @@
     },
     "root": {
       "inputs": {
-        "lutris-overlay": "lutris-overlay",
         "nixpkgs": "nixpkgs",
         "wine-overlays": "wine-overlays"
       }

@@ -1,0 +1,6 @@
+[HKEY_CURRENT_USER\Software\Wine\DllOverrides]
+"d3d9"="native,builtin"
+"d3d10"="native,builtin"
+"d3d10core"="native,builtin"
+"d3d11"="native,builtin"
+"dxgi"="native,builtin"
