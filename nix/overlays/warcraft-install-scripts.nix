@@ -307,8 +307,8 @@
     ];
     text = ''
       echo "Downloading Battle.net"
-      export BNET_SETUP_EXE="https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe"
-      export BNET_DOWNLOAD_URL="$HOME/Downloads/Battle.net-Setup.exe"
+      export BNET_DOWNLOAD_URL="https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe"
+      export BNET_SETUP_EXE="$HOME/Downloads/Battle.net-Setup.exe"
       mkdir -p "$HOME/Downloads"
       curl -L "$BNET_DOWNLOAD_URL" --output "$BNET_SETUP_EXE"
     '';
