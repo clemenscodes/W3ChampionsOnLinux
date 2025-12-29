@@ -58,6 +58,10 @@
             warcraft-install-scripts
             warcraft-scripts
           ];
+          shellHook = ''
+            export WINEPATH="$HOME/Games"
+            export WINEPREFIX="$WINEPATH/W3Champions"
+          '';
         };
       };
     };
