@@ -114,6 +114,8 @@
       export DXVK_LOG_LEVEL=none
       export PROGRAM_FILES="$WINEPREFIX/drive_c/Program Files"
       export W3CHAMPIONS_EXE="$PROGRAM_FILES/W3Champions/W3Champions.exe"
+      export VK_INSTANCE_LAYERS="VK_LAYER_WARCRAFT_overlay"
+      export VK_LAYER_PATH="${self.packages.x86_64-linux.warcraft-vulkan-overlay}/share/vulkan/explicit_layer.d"
 
       if [ ! -f "$W3CHAMPIONS_EXE" ]; then
         install-warcraft
