@@ -65,6 +65,8 @@
       cat ${self}/War3Preferences.txt > "$WARCRAFT_CONFIG_HOME/War3Preferences.txt"
       echo "Installing Warcraft III hotkeys..."
       cat ${self}/CustomKeys.txt > "$WARCRAFT_CONFIG_HOME/CustomKeyBindings/CustomKeys.txt"
+      echo "Installing W3Champions.bat with Bonjour workarounds..."
+      cat ${self}/W3Champions.bat > "$W3CHAMPIONS_HOME/W3Champions.bat"
     '';
   };
   w3c-maps = pkgs.writeShellApplication {
