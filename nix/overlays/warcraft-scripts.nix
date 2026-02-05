@@ -310,12 +310,9 @@
       "SC2086"
     ];
     text = ''
-      YDOTOOL_LOG_FILE="$WARCRAFT_HOME/ydotool_log"
       SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[0].width')"
       SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[0].height')"
       SELECTED_UNIT="$1"
-
-      echo "Selecting unit $SELECTED_UNIT" >> "$YDOTOOL_LOG_FILE"
 
       MOUSE_POS="$(hyprctl cursorpos)"
       MOUSE_X="$(echo "$MOUSE_POS" | cut -d',' -f1)"
@@ -340,8 +337,6 @@
       X=$(( SCREEN_WIDTH  * X_P / 100 ))
       Y=$(( SCREEN_HEIGHT * Y_P / 100 ))
 
-      echo "Moving mouse to $X x $Y" >> "$YDOTOOL_LOG_FILE"
-
       ydotool mousemove --absolute --xpos 0 --ypos 0
       ydotool mousemove --xpos "$X" --ypos "$Y"
       ydotool click 0xC0 0xC0
@@ -357,12 +352,9 @@
       pkgs.jq
     ];
     text = ''
-      YDOTOOL_LOG_FILE="$WARCRAFT_HOME/ydotool_log"
       SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[] | .width')"
       SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
       HOTKEY="$1"
-
-      echo "Activating autocast $HOTKEY" >> "$YDOTOOL_LOG_FILE"
 
       MOUSE_POS=$(hyprctl cursorpos)
       MOUSE_X=$(echo "$MOUSE_POS" | cut -d' ' -f1 | cut -d',' -f1)
@@ -382,8 +374,6 @@
         C) X=$((SCREEN_WIDTH * 80 / 100)); Y=$((SCREEN_HEIGHT * 94 / 100)); ;;
         V) X=$((SCREEN_WIDTH * 84 / 100)); Y=$((SCREEN_HEIGHT * 94 / 100)); ;;
       esac
-
-      echo "Moving mouse to coordinate $X x $Y and clicking right mouse button" >> "$YDOTOOL_LOG_FILE"
 
       ydotool mousemove --absolute --xpos 0 --ypos 0
       ydotool mousemove --xpos "$X" --ypos "$Y"
