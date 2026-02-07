@@ -111,11 +111,11 @@
         "wine-overlays": "wine-overlays"
       },
       "locked": {
-        "lastModified": 1770334303,
-        "narHash": "sha256-F+nc1I/4ZMkhlFLEhUk1hTp/byt5urDaThx2Cyotq/E=",
+        "lastModified": 1770473910,
+        "narHash": "sha256-eWvuCNZBqMKNtjWTjF8tO+HgGBL1AYGl7+rKJqACKrs=",
         "owner": "clemenscodes",
         "repo": "warcraft-vulkan-overlay",
-        "rev": "4bfbdd37c2d4ba11e5764b32c857fbded7ef83b8",
+        "rev": "e210808a9996a98c1bfba536810855ec1a8d6e2f",
         "type": "github"
       },
       "original": {
