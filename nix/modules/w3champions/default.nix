@@ -191,7 +191,6 @@ in {
                   submap = reset
 
                   windowrule = content game, tile on, match:class (battle.net.exe), match:title (Battle.net)
-                  windowrule = content game, workspace 3, fullscreen on, no_initial_focus on, match:class (warcraft iii.exe), match:title (Warcraft III)
                   windowrule = content game, workspace 2, center 1, float on, size (monitor_w*0.8) (monitor_h*0.8), match:class (w3champions.exe), match:title (W3Champions)
                 '';
               };
