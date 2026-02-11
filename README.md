@@ -82,6 +82,12 @@ curl -L "$WEBVIEW_DOWNLOAD_URL" --output "$WEBVIEW_DOWNLOAD_PATH"
 wine "$WEBVIEW_DOWNLOAD_PATH"
 ```
 
+### Default Windows version
+
+The default Windows version is typically set to "Windows 10". This is fine.
+
+If it is set to "Windows 11", W3Champions will later only render a white screen.
+
 ### Set Edge to Windows 7 (IMPORTANT)
 
 You must tell the `msedgewebview2.exe` that the Windows version is 7.
