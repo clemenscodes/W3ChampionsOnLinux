@@ -21,10 +21,10 @@
       overlays = [
         (self.overlays.${system}.default)
         (final: prev: let
-          inherit (inputs.wine-overlays.packages.${system}) wine-11_2 winetricks-compat-11_2;
+          inherit (inputs.wine-overlays.packages.${system}) wine-10_18 winetricks-compat-10_18;
         in {
-          wine = wine-11_2;
-          winetricks-compat = winetricks-compat-11_2;
+          wine = wine-10_18;
+          winetricks-compat = winetricks-compat-10_18;
         })
       ];
     };
