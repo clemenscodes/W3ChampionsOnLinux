@@ -73,7 +73,7 @@ which is required by W3Champions.
 ```sh
 WEBVIEW_DOWNLOAD_URL="https://go.microsoft.com/fwlink/p/?LinkId=2124701"
 WEBVIEW_DOWNLOAD_PATH="$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
-curl -L "$WEBVIEW_DOWNLOAD_URL" --output "$WEBVIEW_DONWLOAD_PATH"
+curl -L "$WEBVIEW_DOWNLOAD_URL" --output "$WEBVIEW_DOWNLOAD_PATH"
 ```
 
 ### Install
