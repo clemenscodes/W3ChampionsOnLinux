@@ -55,10 +55,10 @@ winetricks -q dxvk
 
 echo "Installing DXVK DLLs"
 for dll in ./x64/*.dll; do
-  cp "$dll" "$WINEPREFIX/drive_c/windows/system32/"
+  cp "$dll" "$WINEPREFIX/drive_c/windows/syswow64/"
 done
 for dll in ./x32/*.dll; do
-  cp "$dll" "$WINEPREFIX/drive_c/windows/syswow64/"
+  cp "$dll" "$WINEPREFIX/drive_c/windows/system32/"
 done
 ```
 
@@ -81,6 +81,12 @@ curl -L "$WEBVIEW_DOWNLOAD_URL" --output "$WEBVIEW_DOWNLOAD_PATH"
 ```sh
 wine "$WEBVIEW_DOWNLOAD_PATH"
 ```
+
+### Default Windows version
+
+The default Windows version is typically set to "Windows 10". This is fine.
+
+If it is set to "Windows 11", W3Champions will later only render a white screen.
 
 ### Set Edge to Windows 7 (IMPORTANT)
 
