@@ -62,6 +62,10 @@ for dll in ./x32/*.dll; do
 done
 ```
 
+> [!NOTE]  
+> It may seem unituitive, but the DLLs really have to go in these respective directories
+> according to the upstream [documentation](https://github.com/doitsujin/dxvk?tab=readme-ov-file#how-to-use)
+
 ## WebView2 Runtime (IMPORTANT)
 
 Before, only a very old WebView2 runtime version was supported (109.X).
