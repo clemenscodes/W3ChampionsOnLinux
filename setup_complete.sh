@@ -1,6 +1,8 @@
 #!/bin/bash
 
 export WINEPREFIX="$HOME/Games"
+export WINEDEBUG=-all
+export DXVK_LOG_LEVEL=none
 GITHUB_TOKEN=""
 
 for i in "$@"; do
@@ -26,8 +28,8 @@ mkdir -p "$WINEPREFIX"
 
 ## Initialize wine prefix ##
 
-wineboot --init
-winetricks -q dxvk
+wineboot --init 2>/dev/null
+winetricks -q dxvk 2>/dev/null
 
 ## Get and extract DXVK ##
 
@@ -119,7 +121,7 @@ WEBVIEW_DOWNLOAD_URL="https://go.microsoft.com/fwlink/p/?LinkId=2124701"
 WEBVIEW_DOWNLOAD_PATH="$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
 curl -L "$WEBVIEW_DOWNLOAD_URL" --output "$WEBVIEW_DOWNLOAD_PATH"
 
-wine "$WEBVIEW_DOWNLOAD_PATH"
+wine "$WEBVIEW_DOWNLOAD_PATH" 2>/dev/null
 
 read -p "Press Enter once you have installed webview2 (or 'q' to quit): " response
 if [ "$response" = "q" ] || [ "$response" = "Q" ]; then
@@ -134,7 +136,7 @@ Windows Registry Editor Version 5.00
 [HKEY_CURRENT_USER\Software\Wine\AppDefaults\msedgewebview2.exe]
 "Version"="win7"
 EOF
-wine regedit /S "$REG_FILE"
+wine regedit /S "$REG_FILE" 2>/dev/null
 
 ## Install Battle.net (and WC3) ##
 
@@ -142,7 +144,7 @@ BNET_DOWNLOAD_URL="https://downloader.battle.net/download/getInstaller?os=win&in
 BNET_DOWNLOAD_PATH="$HOME/Downloads/Battle.net-Setup.exe"
 curl -L "$BNET_DOWNLOAD_URL" --output "$BNET_DOWNLOAD_PATH"
 
-wine "$BNET_DOWNLOAD_PATH"
+wine "$BNET_DOWNLOAD_PATH" 2>/dev/null
 
 read -p "Press Enter once you have installed bnet AND downloaded wc3 (or 'q' to quit): " response
 if [ "$response" = "q" ] || [ "$response" = "Q" ]; then
@@ -156,4 +158,4 @@ W3CHAMPIONS_DOWNLOAD_URL="https://update-service.w3champions.com/api/launcher-e"
 W3CHAMPIONS_DOWNLOAD_PATH="$HOME/Downloads/W3Champions_latest_x64_en-US.msi"
 curl -L "$W3CHAMPIONS_DOWNLOAD_URL" --output "$W3CHAMPIONS_DOWNLOAD_PATH"
 
-wine "$W3CHAMPIONS_DOWNLOAD_PATH"
+wine "$W3CHAMPIONS_DOWNLOAD_PATH" 2>/dev/null
