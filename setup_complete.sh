@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export WINEPREFIX="$(HOME)/Games"
+export WINEPREFIX="$HOME/Games"
 GITHUB_TOKEN=""
 
 for i in "$@"; do
