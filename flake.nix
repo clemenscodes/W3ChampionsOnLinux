@@ -66,9 +66,11 @@
             export VK_LOADER_DEBUG="none"
             export DXVK_LOG_LEVEL="none"
             export WINEDEBUG="-all"
+            export WINE_SIMULATE_WRITECOPY=1
             export WINEPATH="$HOME/Games"
             export WINEPREFIX="$WINEPATH/W3Champions"
             export W3="$WINEPREFIX/drive_c/Program Files (x86)/Warcraft III/_retail_/x86_64/Warcraft III.exe"
+            export BNET="$WINEPREFIX/drive_c/Program Files (x86)/Battle.net/Battle.net.exe"
             export W3_CASC="$WINEPREFIX/drive_c/Program Files (x86)/Warcraft III/Data"
             export W3C="$WINEPREFIX/drive_c/Program Files/W3Champions/W3Champions.bat"
           '';

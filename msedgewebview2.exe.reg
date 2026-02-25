@@ -2,3 +2,4 @@ Windows Registry Editor Version 5.00
 
 [HKEY_CURRENT_USER\Software\Wine\AppDefaults\msedgewebview2.exe]
 "Version"="win7"
+
