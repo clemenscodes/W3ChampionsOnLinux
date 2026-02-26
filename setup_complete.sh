@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export WINEPREFIX="$HOME/Games"
+export WINEPREFIX="$HOME/Games/W3Champions"
 export WINEDEBUG=-all
 export DXVK_LOG_LEVEL=none
 GITHUB_TOKEN=""
