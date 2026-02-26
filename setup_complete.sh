@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export WINEPREFIX="$HOME/Games"
 export WINEDEBUG=-all
