@@ -1,4 +1,4 @@
-# Installing W3Champions on Linux (Updated Guide)
+# Installing W3Champions on Linux
 
 ## Automated Setup
 
@@ -125,7 +125,7 @@ done
 ```
 
 > [!NOTE]
-> It may seem unituitive, but the DLLs really have to go in these respective directories
+> It may seem unintuitive, but the DLLs really have to go in these respective directories
 > according to the upstream [documentation](https://github.com/doitsujin/dxvk?tab=readme-ov-file#how-to-use)
 
 ## WebView2 Runtime (IMPORTANT)
@@ -160,7 +160,7 @@ You must tell the `msedgewebview2.exe` that the Windows version is 7.
 
 If you forget to do this, W3Champions will later only render a white screen.
 
-You can either do this either using `winecfg` or by running the following in a terminal.
+You can either do this using `winecfg` or by running the following in a terminal.
 
 ```sh
 REG_FILE=$(mktemp /tmp/wine_reg_XXXXXX.reg)
@@ -196,7 +196,7 @@ Then run Warcraft III once to verify the installed wine and dxvk versions work.
 
 ## W3Champions
 
-### Download W3Champions
+### Download
 
 ```sh
 W3CHAMPIONS_DOWNLOAD_URL="https://update-service.w3champions.com/api/launcher-e"
@@ -204,7 +204,7 @@ W3CHAMPIONS_DOWNLOAD_PATH="$HOME/Downloads/W3Champions_latest_x64_en-US.msi"
 curl -L "$W3CHAMPIONS_DOWNLOAD_URL" --output "$W3CHAMPIONS_DOWNLOAD_PATH"
 ```
 
-### Installing W3Champions
+### Install
 
 This should work without any errors.
 The login should now not crash since we use a new version of the WebView2 runtime.
@@ -212,3 +212,242 @@ The login should now not crash since we use a new version of the WebView2 runtim
 ```sh
 wine "$W3CHAMPIONS_DOWNLOAD_PATH"
 ```
+
+### Run
+
+```sh
+wine "$WINEPREFIX/drive_c/Program Files/W3Champions/W3Champions.exe"
+```
+
+---
+
+## Known Issues
+
+### Mouse cursor disappears
+
+When the mouse disappears, switching workspaces while moving the mouse tends to re-render it on top of the W3Champions window.
+Preventing the window manager from decorating the Warcraft and W3Champions windows can help.
+As a last resort, you can use a virtual desktop in wine — the cursor will be rendered properly at all times inside it.
+
+On Hyprland, setting the following windowrules can help:
+
+```hyprlang
+windowrule = content game,class:(explorer.exe),title:()
+windowrule = content game,class:(battle.net.exe),title:(Battle.net)
+windowrule = content game,class:(w3champions.exe),title:(W3Champions)
+windowrule = content game,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = workspace 2,class:(battle.net.exe),title:(Battle.net)
+windowrule = workspace 3,class:(explorer.exe),title:()
+windowrule = workspace 3,class:(w3champions.exe),title:(W3Champions)
+windowrule = workspace 4,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = tile,class:(battle.net.exe),title:(Battle.net)
+windowrule = tile,class:(w3champions.exe),title:(W3Champions)
+windowrule = tile,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = noinitialfocus,class:(explorer.exe),title:()
+windowrule = noinitialfocus,class:(warcraft iii.exe),title:(Warcraft III)
+windowrule = move 47% 96%,class:(explorer.exe),title:()
+windowrule = opacity 0%,class:(explorer.exe),title:()
+```
+
+### W3Champions cannot verify Warcraft III with Battle.net
+
+If you never played W3Champions before, you may need to verify your Warcraft III installation.
+Download the legacy launcher from the [w3champions GitHub release page](https://github.com/w3champions/launcher/releases),
+run it inside the prefix, then click Play on the legacy launcher to start Warcraft through Battle.net and verify it.
+
+### White screen / W3Champions not launching
+
+- Make sure the default Windows version in `winecfg` is set to **Windows 10** (not Windows 11).
+- Make sure `msedgewebview2.exe` is set to **Windows 7** (see above).
+- If the white screen persists, try killing all lingering wine processes and restarting:
+
+```sh
+for proc in main Warcraft wine Microsoft edge exe Cr mDNS; do
+  pkill "$proc" || true
+done
+```
+
+---
+
+## Discord
+
+- [W3Champions Discord](https://discord.gg/uJmQxG2)
+
+Happy ladder climbing!
+
+---
+
+<details>
+<summary><strong>Legacy Method: Lutris + Proton-GE (deprecated)</strong></summary>
+
+> [!WARNING]
+> This method is deprecated. The Wine-based guide above is the recommended approach.
+> This section is kept for reference in case the Lutris/Proton-GE method works better for your setup.
+
+### Prerequisites
+
+- A valid **Warcraft III: Reforged** installation (through Battle.net).
+- **Proton-GE (Latest, at least 9-26)** installed, or wine-staging (latest).
+- **Lutris** for managing the installation.
+- A **Vulkan-capable GPU**.
+- The **latest Mesa drivers** installed.
+- Follow **Lutris' instructions** for setting up drivers and Wine dependencies on Arch Linux.
+
+### Arch Linux Setup
+
+First, enable multilib (32-bit support) by uncommenting the `[multilib]` section in `/etc/pacman.conf`:
+
+```
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+```
+
+Then upgrade the system:
+
+```sh
+sudo pacman -Syu
+```
+
+#### AMD GPU
+
+```sh
+sudo pacman -S --needed lib32-mesa vulkan-radeon lib32-vulkan-radeon \
+    vulkan-icd-loader lib32-vulkan-icd-loader
+```
+
+#### Wine dependencies
+
+```sh
+sudo pacman -S wine-staging
+sudo pacman -S --needed --asdeps giflib lib32-giflib gnutls lib32-gnutls \
+    v4l-utils lib32-v4l-utils libpulse lib32-libpulse alsa-plugins lib32-alsa-plugins \
+    alsa-lib lib32-alsa-lib sqlite lib32-sqlite libxcomposite lib32-libxcomposite \
+    ocl-icd lib32-ocl-icd libva lib32-libva gtk3 lib32-gtk3 gst-plugins-base-libs \
+    lib32-gst-plugins-base-libs vulkan-icd-loader lib32-vulkan-icd-loader \
+    sdl2-compat lib32-sdl2-compat
+```
+
+### Installing Proton-GE with ProtonPlus
+
+We recommend [ProtonPlus](https://github.com/Vysp3r/ProtonPlus) to manage Proton versions:
+
+```sh
+yay -S protonplus
+```
+
+Run ProtonPlus and install the latest available Proton-GE.
+
+### Setting up Lutris
+
+```sh
+pacman -S lutris
+```
+
+> [!CAUTION]
+> Download the latest Lutris release from [here](https://github.com/lutris/lutris/releases) if you run into issues.
+> Outdated Lutris versions may not work with the latest Proton-GE.
+
+Start Lutris and let it download its runtime. By default it downloads `wine-ge-8-26`, which does **not** work for W3Champions.
+
+> [!CAUTION]
+> After Lutris downloads `wine-ge-8-26`, it sets that as the default runner.
+> Change the runner back to **Proton-GE (Latest)** before proceeding, or you will need to start over in a fresh prefix.
+
+In Lutris, select the Wine runner on the left, then change it to Proton-GE (Latest).
+
+In the system options, toggle `Advanced` and add the environment variable `WINE_SIMULATE_WRITECOPY=1` if you have issues with Battle.net.
+
+### Creating a Lutris Game
+
+1. Press the **+** button → **Add locally installed game**.
+2. Set the name to `W3Champions`, select the **wine** runner.
+3. In game options, set the wineprefix to `~/Games/W3Champions`.
+4. Save.
+
+### Installing WebView2
+
+> [!IMPORTANT]
+> In the Lutris/Proton-GE method, only the **old WebView2 version 109.X** is supported.
+> Download it from the [releases page](https://github.com/clemenscodes/W3ChampionsOnLinux/releases)
+> or from [archive.org](https://archive.org/download/microsoft-edge-web-view-2-runtime-installer-v109.0.1518.78/MicrosoftEdgeWebView2RuntimeInstallerX64.exe).
+
+```sh
+curl -L "https://github.com/clemenscodes/W3ChampionsOnLinux/releases/download/proton-ge-9-27/MicrosoftEdgeWebView2RuntimeInstallerX64.exe" \
+  --output "$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+```
+
+Kill any lingering processes, then right-click the game in Lutris → **Run EXE inside Wine prefix** and select the installer.
+
+```sh
+for proc in lutris main Warcraft wine Microsoft edge srt-bwrap exe Cr mDNS; do
+  pkill "$proc" || true
+done
+```
+
+### Enabling msedgewebview2.exe compatibility
+
+Open **Wine configuration** for the game (`winecfg`) and find `msedgewebview2.exe`.
+Change its Windows version from **Windows 8.1** to **Windows 7**, then Apply and OK.
+
+### Installing Battle.net
+
+```sh
+curl -L "https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe" \
+  --output "$HOME/Downloads/Battle.net-Setup.exe"
+```
+
+Run this EXE inside the prefix. Log in, download Warcraft III: Reforged, and launch it once to confirm it works.
+
+### Installing W3Champions
+
+```sh
+curl -L "https://update-service.w3champions.com/api/launcher-e" \
+  --output "$HOME/Downloads/W3Champions_latest_x64_en-US.msi"
+```
+
+Run this EXE inside the prefix. After installation, set the game executable in Lutris to
+`$HOME/Games/W3Champions/drive_c/Program Files/W3Champions/W3Champions.exe`.
+
+### Signing In
+
+The sign-in step is unreliable. If it keeps crashing, try starting the launcher, then Battle.net, then resetting the Battle.net state. Rebooting first sometimes also helps.
+
+#### Bypassing Sign In via Windows AppData
+
+Sign in to W3Champions on a Windows system (or VM), then copy
+`C:\users\<user>\AppData\Local\com.w3champions.client` to Linux:
+
+```sh
+rm -rf "$HOME/Games/W3Champions/drive_c/users/steamuser/AppData/Local/com.w3champions.client"
+cp -r /mnt/com.w3champions.client "$HOME/Games/W3Champions/drive_c/users/steamuser/AppData/Local/com.w3champions.client"
+```
+
+### Post-installation: Bonjour Service
+
+> [!IMPORTANT]
+> On first launch W3Champions installs Bonjour and runs a LAN test automatically.
+> On subsequent launches you must restart the Bonjour Service.
+> Create a batch file with this content and set it as the game executable in Lutris:
+
+```batch
+C:
+start "" "C:\Program Files\W3Champions\W3Champions.exe"
+net stop "Bonjour Service"
+net start "Bonjour Service"
+```
+
+### Lutris Known Issues
+
+#### Blackscreen / W3Champions not launching
+
+- Ensure `PROTON_VERB=run` is set in the environment variables.
+- If you switch runners inside the prefix, reinstall WebView2 and reset `msedgewebview2.exe` to Windows 7.
+- Kill lingering processes:
+
+```sh
+for proc in lutris main Warcraft wine Microsoft srt-bwrap exe Cr mDNS; do
+  pkill "$proc" || true
+done
+```
+
+</details>
