@@ -14,8 +14,47 @@ Personally, I found the most stable experience using version 10.18.
 Some later versions have actually caused some issues.
 For now, `wine-10.18 (Staging)` is the recommended version to use, until I was able to do more testing with later versions.
 
+### Arch Linux
+
 ```sh
 pacman -S wine-staging
+```
+
+### Debian / Ubuntu
+
+First, enable 32-bit support and add the WineHQ signing key:
+
+```sh
+sudo dpkg --add-architecture i386
+sudo mkdir -pm755 /etc/apt/keyrings
+sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+```
+
+Then add the repository for your distribution. Use the block that matches your OS:
+
+**Debian 12 (Bookworm):**
+```sh
+sudo wget -NP /etc/apt/sources.list.d/ \
+  https://dl.winehq.org/wine-builds/debian/dists/bookworm/winehq-bookworm.sources
+```
+
+**Ubuntu 24.04 (Noble):**
+```sh
+sudo wget -NP /etc/apt/sources.list.d/ \
+  https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
+```
+
+**Ubuntu 22.04 (Jammy):**
+```sh
+sudo wget -NP /etc/apt/sources.list.d/ \
+  https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
+```
+
+Then install wine-staging and winetricks:
+
+```sh
+sudo apt update
+sudo apt install --install-recommends winehq-staging winetricks
 ```
 
 ## Install DXVK
@@ -34,6 +73,9 @@ To get a supported DXVK version one can manually download the artifacts from the
 Once you got a version with support, extract the ZIP file.
 
 ![DXVK ZIP extraction](./assets/dxvk-extract.png)
+
+> [!NOTE]
+> Debian/Ubuntu users: make sure `unzip` is installed first: `sudo apt install unzip`
 
 ```sh
 unzip <dxvk-branch-download-revision>.zip
@@ -62,7 +104,7 @@ for dll in ./x32/*.dll; do
 done
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > It may seem unituitive, but the DLLs really have to go in these respective directories
 > according to the upstream [documentation](https://github.com/doitsujin/dxvk?tab=readme-ov-file#how-to-use)
 
