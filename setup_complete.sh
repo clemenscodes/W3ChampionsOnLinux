@@ -24,6 +24,66 @@ for i in "$@"; do
   esac
 done
 
+## Detect distro and install Wine (Staging) ##
+
+detect_distro() {
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    echo "${ID_LIKE:-$ID}"
+  else
+    echo "unknown"
+  fi
+}
+
+install_wine() {
+  local distro
+  distro=$(detect_distro)
+
+  case "$distro" in
+    *arch*)
+      echo "Detected Arch-based distro. Installing wine-staging..."
+      sudo pacman -S --needed --noconfirm wine-staging
+      ;;
+    *debian*|*ubuntu*)
+      echo "Detected Debian/Ubuntu-based distro. Installing wine-staging..."
+      sudo dpkg --add-architecture i386
+      sudo mkdir -pm755 /etc/apt/keyrings
+      sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+
+      . /etc/os-release
+      case "$ID" in
+        debian)
+          sudo wget -NP /etc/apt/sources.list.d/ \
+            "https://dl.winehq.org/wine-builds/debian/dists/${VERSION_CODENAME}/winehq-${VERSION_CODENAME}.sources"
+          ;;
+        ubuntu|linuxmint|pop)
+          sudo wget -NP /etc/apt/sources.list.d/ \
+            "https://dl.winehq.org/wine-builds/ubuntu/dists/${UBUNTU_CODENAME:-$VERSION_CODENAME}/winehq-${UBUNTU_CODENAME:-$VERSION_CODENAME}.sources"
+          ;;
+        *)
+          echo "Unknown Debian-based distro '$ID'. Attempting with VERSION_CODENAME=$VERSION_CODENAME..."
+          sudo wget -NP /etc/apt/sources.list.d/ \
+            "https://dl.winehq.org/wine-builds/debian/dists/${VERSION_CODENAME}/winehq-${VERSION_CODENAME}.sources"
+          ;;
+      esac
+
+      sudo apt update
+      sudo apt install --install-recommends -y winehq-staging winetricks unzip
+      ;;
+    *)
+      echo "Unsupported distro: $distro"
+      echo "Please install wine-staging manually and re-run this script."
+      exit 1
+      ;;
+  esac
+}
+
+if ! command -v wine &> /dev/null; then
+  install_wine
+else
+  echo "Wine is already installed: $(wine --version)"
+fi
+
 mkdir -p "$WINEPREFIX"
 
 ## Initialize wine prefix ##

@@ -1,5 +1,25 @@
 # Installing W3Champions on Linux (Updated Guide)
 
+## Automated Setup
+
+A [`setup_complete.sh`](./setup_complete.sh) script is available that automates the full setup.
+It detects whether you are on an Arch-based or Debian/Ubuntu-based distro and installs Wine (Staging) accordingly,
+then proceeds to set up DXVK, WebView2, Battle.net, and W3Champions.
+
+```sh
+bash setup_complete.sh
+```
+
+You can optionally pass a custom wine prefix path and a GitHub token (needed to download the DXVK artifact without the `gh` CLI):
+
+```sh
+bash setup_complete.sh --prefix="$HOME/Games/W3Champions" --token="<your-github-token>"
+```
+
+If you prefer to follow the steps manually, continue below.
+
+---
+
 ## Install Wine (Staging)
 
 At least wine 10.16 is required,
