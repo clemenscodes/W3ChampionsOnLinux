@@ -17,20 +17,12 @@
       setup-warcraft-wine
       warcraft-settings
       warcraft-copy
-      w3c-login-bypass
       w3c-maps
       install-webview
       install-w3c
     ];
     text = ''
       echo "Installing Warcraft III"
-
-      : "''${W3C_AUTH_DATA:=}"
-      : "''${WARCRAFT_PATH:=}"
-      export W3C_AUTH_DATA WARCRAFT_PATH
-
-      WARCRAFT_PATH="$WARCRAFT_PATH" warcraft-copy || true
-      W3C_AUTH_DATA="$W3C_AUTH_DATA" w3c-login-bypass || true
 
       setup-warcraft-wine
       warcraft-settings || true
@@ -74,8 +66,8 @@
 
       mkdir -p "$WARCRAFT_CONFIG_HOME/CustomKeyBindings" "$W3CHAMPIONS_HOME"
 
-      cat ${self}/War3Preferences.txt > "$WARCRAFT_CONFIG_HOME/War3Preferences.txt"
-      cat ${self}/CustomKeys.txt > "$WARCRAFT_CONFIG_HOME/CustomKeyBindings/CustomKeys.txt"
+      cat ${self}/assets/config/War3Preferences.txt > "$WARCRAFT_CONFIG_HOME/War3Preferences.txt"
+      cat ${self}/assets/config/CustomKeys.txt > "$WARCRAFT_CONFIG_HOME/CustomKeyBindings/CustomKeys.txt"
       cat ${self}/W3Champions.bat > "$W3CHAMPIONS_HOME/W3Champions.bat"
     '';
   };
@@ -121,27 +113,6 @@
         mkdir -p "$PROGRAM_FILES86"
         cp -r "$WARCRAFT_PATH" "$WARCRAFT_HOME"
       fi
-    '';
-  };
-
-  w3c-login-bypass = pkgs.writeShellApplication {
-    name = "w3c-login-bypass";
-    runtimeInputs = [pkgs.rsync];
-    text = ''
-      ${wineEnv}
-
-      : "''${W3C_AUTH_DATA:=}"
-      : "''${USER_HOME:=$WINEPREFIX/drive_c/users/$USER}"
-      : "''${W3C_DATA:=$USER_HOME/AppData/Local/com.w3champions.client}"
-      export W3C_AUTH_DATA USER_HOME W3C_DATA
-
-      if [[ -z "$W3C_AUTH_DATA" || ! -d "$W3C_AUTH_DATA" ]]; then
-        echo "Invalid W3C_AUTH_DATA"
-        exit 1
-      fi
-
-      mkdir -p "$W3C_DATA"
-      rsync -av --delete "$W3C_AUTH_DATA/" "$W3C_DATA/"
     '';
   };
 
@@ -256,7 +227,7 @@
       : "''${PROGRAM_FILES86:=$WINEPREFIX/drive_c/Program Files (x86)}"
       : "''${BNET_EXE:=$PROGRAM_FILES86/Battle.net/Battle.net.exe}"
       export PROGRAM_FILES86 BNET_EXE
-      export VK_INSTANCE_LAYERS="VK_LAYER_WARCRAFT_overlay"
+      # export VK_INSTANCE_LAYERS="VK_LAYER_WARCRAFT_overlay"
       export VK_LAYER_PATH="${self.packages.x86_64-linux.warcraft-vulkan-overlay}/share/vulkan/explicit_layer.d"
 
       [[ -f "$BNET_EXE" ]] || install-battlenet
@@ -273,7 +244,7 @@
       : "''${PROGRAM_FILES86:=$WINEPREFIX/drive_c/Program Files (x86)}"
       : "''${WARCRAFT_EXE:=$PROGRAM_FILES86/Warcraft III/_retail_/x86_64/Warcraft III.exe}"
       export PROGRAM_FILES86 WARCRAFT_EXE
-      export VK_INSTANCE_LAYERS="VK_LAYER_WARCRAFT_overlay"
+      # export VK_INSTANCE_LAYERS="VK_LAYER_WARCRAFT_overlay"
       export VK_LAYER_PATH="${self.packages.x86_64-linux.warcraft-vulkan-overlay}/share/vulkan/explicit_layer.d"
 
       [[ -f "$WARCRAFT_EXE" ]] || exit 0
@@ -289,7 +260,6 @@ in {
       warcraft-settings
       w3c-maps
       warcraft-copy
-      w3c-login-bypass
       cleanup-warcraft-wine
       download-webview
       install-webview
