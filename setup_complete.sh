@@ -42,7 +42,7 @@ install_wine() {
   case "$distro" in
     *arch*)
       echo "Detected Arch-based distro. Installing wine-staging..."
-      sudo pacman -S --needed --noconfirm wine-staging
+      sudo pacman -S --needed --noconfirm wine-staging unzip winetricks
       ;;
     *debian*|*ubuntu*)
       echo "Detected Debian/Ubuntu-based distro. Installing wine-staging..."
