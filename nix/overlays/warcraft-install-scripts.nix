@@ -2,7 +2,8 @@
   self,
   pkgs,
   ...
-}: let
+}:
+let
   wineEnv = ''
     : "''${WINEPATH:=$HOME/Games}"
     : "''${WINEPREFIX:=$WINEPATH/W3Champions}"
@@ -34,7 +35,10 @@
 
   setup-warcraft-wine = pkgs.writeShellApplication {
     name = "setup-warcraft-wine";
-    runtimeInputs = [pkgs.wine pkgs.winetricks pkgs.winetricks-compat];
+    runtimeInputs = [
+      pkgs.wine
+      pkgs.winetricks
+    ];
     text = ''
       echo "Setting up wine prefix for Warcraft III"
       ${wineEnv}
@@ -128,7 +132,7 @@
 
   download-webview = pkgs.writeShellApplication {
     name = "download-webview";
-    runtimeInputs = [pkgs.curl];
+    runtimeInputs = [ pkgs.curl ];
     text = ''
       : "''${WEBVIEW2_SETUP_EXE:=$HOME/Downloads/MicrosoftEdgeWebView2RuntimeInstallerX64.exe}"
       : "''${WEBVIEW2_DOWNLOAD_URL:=https://github.com/clemenscodes/W3ChampionsOnLinux/releases/download/proton-ge-9-27/MicrosoftEdgeWebView2RuntimeInstallerX64.exe}"
@@ -141,7 +145,11 @@
 
   install-webview = pkgs.writeShellApplication {
     name = "install-webview";
-    runtimeInputs = [download-webview cleanup-warcraft-wine pkgs.wine];
+    runtimeInputs = [
+      download-webview
+      cleanup-warcraft-wine
+      pkgs.wine
+    ];
     text = ''
       ${wineEnv}
 
@@ -164,7 +172,7 @@
 
   download-w3c = pkgs.writeShellApplication {
     name = "download-w3c";
-    runtimeInputs = [pkgs.curl];
+    runtimeInputs = [ pkgs.curl ];
     text = ''
       : "''${W3CHAMPIONS_SETUP_EXE:=$HOME/Downloads/W3Champions_latest_x64_en-US.msi}"
       : "''${W3CHAMPIONS_DOWNLOAD_URL:=https://update-service.w3champions.com/api/launcher-e}"
@@ -177,7 +185,12 @@
 
   install-w3c = pkgs.writeShellApplication {
     name = "install-w3c";
-    runtimeInputs = [download-w3c cleanup-warcraft-wine install-webview pkgs.wine];
+    runtimeInputs = [
+      download-w3c
+      cleanup-warcraft-wine
+      install-webview
+      pkgs.wine
+    ];
     text = ''
       ${wineEnv}
 
@@ -192,7 +205,7 @@
 
   download-battlenet = pkgs.writeShellApplication {
     name = "download-battlenet";
-    runtimeInputs = [pkgs.curl];
+    runtimeInputs = [ pkgs.curl ];
     text = ''
       : "''${BNET_SETUP_EXE:=$HOME/Downloads/Battle.net-Setup.exe}"
       : "''${BNET_DOWNLOAD_URL:=https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe}"
@@ -205,7 +218,11 @@
 
   install-battlenet = pkgs.writeShellApplication {
     name = "install-battlenet";
-    runtimeInputs = [download-battlenet cleanup-warcraft-wine pkgs.wine];
+    runtimeInputs = [
+      download-battlenet
+      cleanup-warcraft-wine
+      pkgs.wine
+    ];
     text = ''
       ${wineEnv}
 
@@ -220,7 +237,11 @@
 
   battlenet = pkgs.writeShellApplication {
     name = "battlenet";
-    runtimeInputs = [cleanup-warcraft-wine install-battlenet pkgs.wine];
+    runtimeInputs = [
+      cleanup-warcraft-wine
+      install-battlenet
+      pkgs.wine
+    ];
     text = ''
       ${wineEnv}
 
@@ -237,7 +258,10 @@
 
   warcraft = pkgs.writeShellApplication {
     name = "warcraft";
-    runtimeInputs = [cleanup-warcraft-wine pkgs.wine];
+    runtimeInputs = [
+      cleanup-warcraft-wine
+      pkgs.wine
+    ];
     text = ''
       ${wineEnv}
 
@@ -251,7 +275,8 @@
       wine "$WARCRAFT_EXE" -launcher
     '';
   };
-in {
+in
+{
   warcraft-install-scripts = pkgs.symlinkJoin {
     name = "warcraft-install-scripts";
     paths = [

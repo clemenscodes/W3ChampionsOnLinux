@@ -10,72 +10,78 @@
       url = "github:clemenscodes/wine-overlays";
     };
   };
-  outputs = {
-    self,
-    nixpkgs,
-    ...
-  } @ inputs: let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {
-      inherit system;
-      overlays = [
-        (self.overlays.${system}.default)
-        (final: prev: let
-          inherit (inputs.wine-overlays.packages.${system}) wine-11_4 winetricks-compat-11_4;
-        in {
-          wine = wine-11_4;
-          winetricks-compat = winetricks-compat-11_4;
-        })
-      ];
-    };
-    inherit (pkgs) lib;
-  in {
-    nixosModules = {
-      ${system} = {
-        default = import ./nix/modules {inherit self inputs pkgs lib;};
+  outputs =
+    {
+      self,
+      nixpkgs,
+      ...
+    }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          (self.overlays.${system}.default)
+          (final: prev: {
+            wine = inputs.wine-overlays.packages.${system}.wine-11_7;
+          })
+        ];
       };
-    };
-    overlays = {
-      ${system} = {
-        default = import ./nix/overlays {inherit self;};
+      inherit (pkgs) lib;
+    in
+    {
+      nixosModules = {
+        ${system} = {
+          default = import ./nix/modules {
+            inherit
+              self
+              inputs
+              pkgs
+              lib
+              ;
+          };
+        };
       };
-    };
-    packages = {
-      ${system} = {
-        inherit (inputs.warcraft-vulkan-overlay.packages.${system}) warcraft-vulkan-overlay;
-        inherit (pkgs) warcraft-install-scripts warcraft-scripts;
-        default = self.packages.${system}.warcraft-install-scripts;
+      overlays = {
+        ${system} = {
+          default = import ./nix/overlays { inherit self; };
+        };
       };
-    };
-    formatter = {
-      ${system} = pkgs.alejandra;
-    };
-    devShells = {
-      ${system} = {
-        default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            curl
-            protonplus
-            wine # using custom wine from overlay
-            winetricks-compat # symlinked wine from overlay to wine64
-            winetricks # works normally thanks to overlay
-            warcraft-install-scripts
-            warcraft-scripts
-          ];
-          shellHook = ''
-            export VK_LOADER_DEBUG="none"
-            export DXVK_LOG_LEVEL="none"
-            export WINEDEBUG="-all"
-            export WINE_SIMULATE_WRITECOPY=1
-            export WINEPATH="$HOME/Games"
-            export WINEPREFIX="$WINEPATH/W3Champions"
-            export W3="$WINEPREFIX/drive_c/Program Files (x86)/Warcraft III/_retail_/x86_64/Warcraft III.exe"
-            export BNET="$WINEPREFIX/drive_c/Program Files (x86)/Battle.net/Battle.net.exe"
-            export W3_CASC="$WINEPREFIX/drive_c/Program Files (x86)/Warcraft III/Data"
-            export W3C="$WINEPREFIX/drive_c/Program Files/W3Champions/W3Champions.bat"
-          '';
+      packages = {
+        ${system} = {
+          inherit (inputs.warcraft-vulkan-overlay.packages.${system}) warcraft-vulkan-overlay;
+          inherit (pkgs) warcraft-install-scripts warcraft-scripts;
+          default = self.packages.${system}.warcraft-install-scripts;
+        };
+      };
+      formatter = {
+        ${system} = pkgs.alejandra;
+      };
+      devShells = {
+        ${system} = {
+          default = pkgs.mkShell {
+            buildInputs = with pkgs; [
+              curl
+              protonplus
+              wine # using custom wine from wine-overlay
+              winetricks # works normally thanks to wine-overlay
+              warcraft-install-scripts
+              warcraft-scripts
+            ];
+            shellHook = ''
+              export VK_LOADER_DEBUG="none"
+              export DXVK_LOG_LEVEL="none"
+              export WINEDEBUG="-all"
+              export WINE_SIMULATE_WRITECOPY=1
+              export WINEPATH="$HOME/Games"
+              export WINEPREFIX="$WINEPATH/W3Champions"
+              export W3="$WINEPREFIX/drive_c/Program Files (x86)/Warcraft III/_retail_/x86_64/Warcraft III.exe"
+              export BNET="$WINEPREFIX/drive_c/Program Files (x86)/Battle.net/Battle.net.exe"
+              export W3_CASC="$WINEPREFIX/drive_c/Program Files (x86)/Warcraft III/Data"
+              export W3C="$WINEPREFIX/drive_c/Program Files/W3Champions/W3Champions.bat"
+            '';
+          };
         };
       };
     };
-  };
 }
