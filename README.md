@@ -18,8 +18,6 @@ bash setup_complete.sh --prefix="$HOME/Games/W3Champions" --token="<your-github-
 
 If you prefer to follow the steps manually, continue below.
 
----
-
 ## Install Wine (Staging)
 
 At least wine 10.16 is required,
@@ -219,7 +217,15 @@ wine "$W3CHAMPIONS_DOWNLOAD_PATH"
 wine "$WINEPREFIX/drive_c/Program Files/W3Champions/W3Champions.exe"
 ```
 
----
+## Troubleshooting
+
+If something isn't working, run the diagnostic script and paste the full output into a [GitHub issue](https://github.com/clemenscodes/W3ChampionsOnLinux/issues):
+
+```sh
+bash scripts/diagnose.sh
+```
+
+It checks Wine version, DXVK version and DLL overrides, Windows version in the prefix, WebView2 runtime, Vulkan drivers (64-bit and 32-bit), GPU driver versions against DXVK minimum requirements, game installations, Bonjour, and firewall ports.
 
 ## Known Issues
 
@@ -227,7 +233,7 @@ wine "$WINEPREFIX/drive_c/Program Files/W3Champions/W3Champions.exe"
 
 When the mouse disappears, switching workspaces while moving the mouse tends to re-render it on top of the W3Champions window.
 Preventing the window manager from decorating the Warcraft and W3Champions windows can help.
-As a last resort, you can use a virtual desktop in wine — the cursor will be rendered properly at all times inside it.
+As a last resort, you can use a virtual desktop in wine. The cursor will be rendered properly at all times inside it.
 
 On Hyprland, setting the following windowrules can help:
 
@@ -257,7 +263,12 @@ run it inside the prefix, then click Play on the legacy launcher to start Warcra
 
 ### White screen / W3Champions not launching
 
+Run `bash scripts/diagnose.sh` first. It will flag the most common causes automatically.
+
+Manual checks:
+
 - Make sure the default Windows version in `winecfg` is set to **Windows 10** (not Windows 11).
+  Fix: `winecfg /v win10`
 - Make sure `msedgewebview2.exe` is set to **Windows 7** (see above).
 - If the white screen persists, try killing all lingering wine processes and restarting:
 
@@ -267,15 +278,11 @@ for proc in main Warcraft wine Microsoft edge exe Cr mDNS; do
 done
 ```
 
----
-
 ## Discord
 
 - [W3Champions Discord](https://discord.gg/uJmQxG2)
 
 Happy ladder climbing!
-
----
 
 <details>
 <summary><strong>Legacy Method: Lutris + Proton-GE (deprecated)</strong></summary>

@@ -72,6 +72,7 @@
               export VK_LOADER_DEBUG="none"
               export DXVK_LOG_LEVEL="none"
               export WINEDEBUG="-all"
+              export WINEARCH="win64"
               export WINE_SIMULATE_WRITECOPY=1
               export WINEPATH="$HOME/Games"
               export WINEPREFIX="$WINEPATH/W3Champions"
