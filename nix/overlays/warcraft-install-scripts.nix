@@ -248,8 +248,7 @@ let
       : "''${PROGRAM_FILES86:=$WINEPREFIX/drive_c/Program Files (x86)}"
       : "''${BNET_EXE:=$PROGRAM_FILES86/Battle.net/Battle.net.exe}"
       export PROGRAM_FILES86 BNET_EXE
-      # export VK_INSTANCE_LAYERS="VK_LAYER_WARCRAFT_overlay"
-      export VK_LAYER_PATH="${self.packages.x86_64-linux.warcraft-vulkan-overlay}/share/vulkan/explicit_layer.d"
+      export WARCRAFT_OVERLAY_ENABLE=1
 
       [[ -f "$BNET_EXE" ]] || install-battlenet
       wine "$BNET_EXE"
@@ -268,8 +267,7 @@ let
       : "''${PROGRAM_FILES86:=$WINEPREFIX/drive_c/Program Files (x86)}"
       : "''${WARCRAFT_EXE:=$PROGRAM_FILES86/Warcraft III/_retail_/x86_64/Warcraft III.exe}"
       export PROGRAM_FILES86 WARCRAFT_EXE
-      # export VK_INSTANCE_LAYERS="VK_LAYER_WARCRAFT_overlay"
-      export VK_LAYER_PATH="${self.packages.x86_64-linux.warcraft-vulkan-overlay}/share/vulkan/explicit_layer.d"
+      export WARCRAFT_OVERLAY_ENABLE=1
 
       [[ -f "$WARCRAFT_EXE" ]] || exit 0
       wine "$WARCRAFT_EXE" -launcher

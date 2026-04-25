@@ -51,18 +51,21 @@ sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-bui
 Then add the repository for your distribution. Use the block that matches your OS:
 
 **Debian 12 (Bookworm):**
+
 ```sh
 sudo wget -NP /etc/apt/sources.list.d/ \
   https://dl.winehq.org/wine-builds/debian/dists/bookworm/winehq-bookworm.sources
 ```
 
 **Ubuntu 24.04 (Noble):**
+
 ```sh
 sudo wget -NP /etc/apt/sources.list.d/ \
   https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
 ```
 
 **Ubuntu 22.04 (Jammy):**
+
 ```sh
 sudo wget -NP /etc/apt/sources.list.d/ \
   https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
@@ -82,7 +85,9 @@ However, the support is implemented on the [master branch](https://github.com/do
 thanks to the following [Pull Request](https://github.com/doitsujin/dxvk/pull/5257).
 
 To get a supported DXVK version one can manually download the artifacts from the
-[action workflows](https://github.com/doitsujin/dxvk/actions/workflows/artifacts.yml).
+[action workflows](<https://github.com/doitsujin/dxvk/actions?query=branch%3Amaster+workflow%3A"Artifacts%20(Package)">).
+
+You should manually download the latest artifact that has a green checkmark.
 
 ![DXVK Workflow Actions Download Page](./assets/dxvk-actions.png)
 

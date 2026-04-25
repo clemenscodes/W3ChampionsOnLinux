@@ -15,8 +15,8 @@
     name = "focus-warcraft-game";
     runtimeInputs = [pkgs.hyprland pkgs.socat pkgs.jq warcraft-mode-start warcraft-mode-stop];
     text = ''
-      SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[] | .width')"
-      SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
+      SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[0].width')"
+      SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[0].height')"
       X=$((SCREEN_WIDTH * 8 / 10))
       Y=$((SCREEN_HEIGHT * 8 / 10))
       WARCRAFT_ADDRESS=""
@@ -112,10 +112,7 @@
       export W3CHAMPIONS_EXE="$PROGRAM_FILES/W3Champions/W3Champions.exe"
       export WINEDEBUG=-all
       export DXVK_LOG_LEVEL=none
-      export PROGRAM_FILES="$WINEPREFIX/drive_c/Program Files"
-      export W3CHAMPIONS_EXE="$PROGRAM_FILES/W3Champions/W3Champions.exe"
-      export VK_INSTANCE_LAYERS="VK_LAYER_WARCRAFT_overlay"
-      export VK_LAYER_PATH="${self.packages.x86_64-linux.warcraft-vulkan-overlay}/share/vulkan/explicit_layer.d"
+      export WARCRAFT_OVERLAY_ENABLE=1
 
       if [ ! -f "$W3CHAMPIONS_EXE" ]; then
         install-warcraft
@@ -155,6 +152,7 @@
     name = "warcraft-chat-open";
     runtimeInputs = [
       pkgs.hyprland
+      pkgs.ydotool
     ];
     text = ''
       ydotool key 96:1 96:0
@@ -165,6 +163,7 @@
     name = "warcraft-chat-send";
     runtimeInputs = [
       pkgs.hyprland
+      pkgs.ydotool
     ];
     text = ''
       ydotool key 96:1 96:0
@@ -276,6 +275,7 @@
         8) CONTROL_GROUP_KEYCODE=9 ;;
         9) CONTROL_GROUP_KEYCODE=10 ;;
         0) CONTROL_GROUP_KEYCODE=11 ;;
+        *) echo "warcraft-write-control-group: unknown group: $CONTROL_GROUP" >&2; exit 1 ;;
       esac
 
       echo "$CONTROL_GROUP_KEYCODE" > "$WARCRAFT_HOME/control_group_keycode"
@@ -295,6 +295,10 @@
     ];
     text = ''
       CONTROL_GROUP_KEYCODE_FILE="$WARCRAFT_HOME/control_group_keycode"
+      if [[ ! -f "$CONTROL_GROUP_KEYCODE_FILE" ]]; then
+        echo "warcraft-set-selection-control-group: keycode file not found: $CONTROL_GROUP_KEYCODE_FILE" >&2
+        exit 1
+      fi
       CONTROL_GROUP_KEYCODE="$(cat "$CONTROL_GROUP_KEYCODE_FILE")"
 
       ydotool key 29:1 "$CONTROL_GROUP_KEYCODE":1 "$CONTROL_GROUP_KEYCODE":0 29:0
@@ -318,7 +322,7 @@
 
       MOUSE_POS="$(hyprctl cursorpos)"
       MOUSE_X="$(echo "$MOUSE_POS" | cut -d',' -f1)"
-      MOUSE_Y="$(echo "$MOUSE_POS" | cut -d',' -f2)"
+      MOUSE_Y="$(echo "$MOUSE_POS" | cut -d' ' -f2)"
 
       case "$SELECTED_UNIT" in
         1)  X_P=42; Y_P=85 ;;
@@ -354,8 +358,8 @@
       pkgs.jq
     ];
     text = ''
-      SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[] | .width')"
-      SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[] | .height')"
+      SCREEN_WIDTH="$(hyprctl monitors -j | jq -r '.[0].width')"
+      SCREEN_HEIGHT="$(hyprctl monitors -j | jq -r '.[0].height')"
       HOTKEY="$1"
 
       MOUSE_POS=$(hyprctl cursorpos)
@@ -375,6 +379,7 @@
         X) X=$((SCREEN_WIDTH * 76 / 100)); Y=$((SCREEN_HEIGHT * 94 / 100)); ;;
         C) X=$((SCREEN_WIDTH * 80 / 100)); Y=$((SCREEN_HEIGHT * 94 / 100)); ;;
         V) X=$((SCREEN_WIDTH * 84 / 100)); Y=$((SCREEN_HEIGHT * 94 / 100)); ;;
+        *) echo "warcraft-autocast: unknown hotkey: $HOTKEY" >&2; exit 1 ;;
       esac
 
       ydotool mousemove --absolute --xpos 0 --ypos 0
