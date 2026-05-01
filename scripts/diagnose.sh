@@ -9,6 +9,44 @@ issue() { ISSUES+=("$*"); }
 
 hdr() { echo; echo "### $*"; }
 
+# Detect GPU vendor via sysfs PCI vendor IDs — more reliable than lspci text matching,
+# which can false-positive on AMD chipset "Display controller" entries (class 0x038000).
+# AMD=0x1002, NVIDIA=0x10de. Display classes start with 0x03.
+_has_display_pci() {
+    local vendor="$1" d v c
+    for d in /sys/bus/pci/devices/*/; do
+        v=$(cat "$d/vendor" 2>/dev/null) || continue
+        [ "$v" = "$vendor" ] || continue
+        c=$(cat "$d/class" 2>/dev/null) || continue
+        case "$c" in 0x03*) return 0;; esac
+    done
+    return 1
+}
+
+# Check whether a Vulkan library (possibly a bare soname) is installed for a given arch.
+# On NixOS/Arch the library_path is absolute; on Debian/Ubuntu it may be a bare soname
+# like "libGLX_nvidia.so.0" that lives in a standard multilib directory.
+_lib_exists_for_suffix() {
+    local lib="$1" suffix="$2" base d
+    case "$lib" in
+        /*) [ -f "$lib" ]; return;;
+    esac
+    base=$(basename "$lib")
+    case "$suffix" in
+        i686)
+            for d in /usr/lib/i386-linux-gnu /usr/lib32 /lib/i386-linux-gnu; do
+                [ -f "$d/$base" ] && return 0
+            done
+            ;;
+        *)
+            for d in /usr/lib/x86_64-linux-gnu /usr/lib64 /usr/lib /lib/x86_64-linux-gnu; do
+                [ -f "$d/$base" ] && return 0
+            done
+            ;;
+    esac
+    return 1
+}
+
 echo "=== W3ChampionsOnLinux Diagnostic Report ==="
 echo "Date : $(date -u '+%Y-%m-%d %H:%M UTC')"
 
@@ -62,13 +100,21 @@ fi
 
 icd_exists() {
     local name="$1" suffix="$2"; shift 2
+    local f lib
     for dir in "$@"; do
         [ -d "$dir" ] || continue
+        # Arch-suffixed (NixOS, Arch, Mesa on Debian: e.g. radeon_icd.x86_64.json)
         for f in "$dir"/*"${name}"*."${suffix}".json; do
             [ -f "$f" ] || continue
-            local lib
             lib=$(grep -m1 'library_path' "$f" | sed 's/.*"library_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
-            [ -f "$lib" ] && return 0
+            _lib_exists_for_suffix "$lib" "$suffix" && return 0
+        done
+        # Non-arch-suffixed (NVIDIA on Debian/Ubuntu: nvidia_icd.json)
+        for f in "$dir"/*"${name}"*.json; do
+            [ -f "$f" ] || continue
+            case "$f" in *.x86_64.json|*.i686.json) continue;; esac
+            lib=$(grep -m1 'library_path' "$f" | sed 's/.*"library_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+            _lib_exists_for_suffix "$lib" "$suffix" && return 0
         done
     done
     return 1
@@ -76,14 +122,25 @@ icd_exists() {
 
 print_vulkan_icds() {
     local suffix="$1"; shift
-    local found=0
+    local found=0 f lib api name
     for dir in "$@"; do
         [ -d "$dir" ] || continue
+        # Arch-suffixed (NixOS, Arch, Mesa on Debian)
         for f in "$dir"/*."$suffix".json; do
             [ -f "$f" ] || continue
-            local lib api name
             lib=$(grep -m1 'library_path' "$f" | sed 's/.*"library_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
-            [ -f "$lib" ] || continue
+            _lib_exists_for_suffix "$lib" "$suffix" || continue
+            api=$(grep -m1 'api_version' "$f" | sed 's/.*"api_version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+            name=$(basename "$lib" | sed 's/\.so.*//; s/^libvulkan_//; s/^libGLX_//')
+            echo "  $name  (Vulkan $api)"
+            found=1
+        done
+        # Non-arch-suffixed (NVIDIA on Debian/Ubuntu: nvidia_icd.json)
+        for f in "$dir"/*.json; do
+            [ -f "$f" ] || continue
+            case "$f" in *.x86_64.json|*.i686.json) continue;; esac
+            lib=$(grep -m1 'library_path' "$f" | sed 's/.*"library_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+            _lib_exists_for_suffix "$lib" "$suffix" || continue
             api=$(grep -m1 'api_version' "$f" | sed 's/.*"api_version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
             name=$(basename "$lib" | sed 's/\.so.*//; s/^libvulkan_//; s/^libGLX_//')
             echo "  $name  (Vulkan $api)"
@@ -110,9 +167,7 @@ ver_gte() {
     [ "$(printf '%s\n%s' "$1" "$2" | sort -V | head -1)" = "$2" ]
 }
 
-gpu_list=$(lspci 2>/dev/null | grep -iE "VGA|3D|Display")
-
-if echo "$gpu_list" | grep -qiE "AMD|ATI|Radeon"; then
+if _has_display_pci "0x1002"; then
     if icd_exists radeon x86_64 "${dirs64[@]}" && icd_exists radeon i686 "${dirs32[@]}"; then
         echo "AMD GPU     : radeon (RADV/Mesa) ICD OK for 64-bit and 32-bit"
     else
@@ -137,12 +192,12 @@ if echo "$gpu_list" | grep -qiE "AMD|ATI|Radeon"; then
     fi
 fi
 
-if echo "$gpu_list" | grep -qiE "NVIDIA"; then
+if _has_display_pci "0x10de"; then
     if icd_exists nvidia x86_64 "${dirs64[@]}" && icd_exists nvidia i686 "${dirs32[@]}"; then
         echo "NVIDIA GPU  : nvidia ICD OK for 64-bit and 32-bit"
     else
         echo "NVIDIA GPU  : nvidia ICD missing or incomplete"
-        issue "NVIDIA GPU detected but nvidia Vulkan ICD missing. Install nvidia-utils + lib32-nvidia-utils (Arch) or equivalent."
+        issue "NVIDIA GPU detected but nvidia Vulkan ICD missing or 32-bit libs not installed. Arch: install lib32-nvidia-utils. Debian/Ubuntu/Mint: install libnvidia-gl-<ver>:i386 (e.g. sudo apt install libnvidia-gl-580:i386)."
     fi
     nvidia_drv=${nvidia_ver:-$(</sys/module/nvidia/version 2>/dev/null)}
     if [ -n "$nvidia_drv" ]; then

@@ -78,11 +78,53 @@ install_wine() {
   esac
 }
 
+install_vulkan_drivers() {
+  local distro
+  distro=$(detect_distro)
+
+  case "$distro" in
+    *arch*)
+      echo "Installing 32-bit Vulkan support (Arch)..."
+      sudo pacman -S --needed --noconfirm lib32-vulkan-icd-loader
+      if lspci 2>/dev/null | grep -qiE "NVIDIA"; then
+        sudo pacman -S --needed --noconfirm lib32-nvidia-utils
+      fi
+      if lspci 2>/dev/null | grep -qiE "AMD|ATI|Radeon"; then
+        sudo pacman -S --needed --noconfirm lib32-vulkan-radeon
+      fi
+      ;;
+    *debian*|*ubuntu*)
+      echo "Installing 32-bit Vulkan support (Debian/Ubuntu)..."
+      sudo dpkg --add-architecture i386
+      sudo apt update -qq
+      sudo apt install -y libvulkan1 libvulkan1:i386 || true
+      # NVIDIA: 32-bit Vulkan libs (libnvidia-gl-<ver>:i386) are NOT pulled in automatically
+      if command -v nvidia-smi &>/dev/null; then
+        local nvidia_major
+        nvidia_major=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -1 | cut -d. -f1)
+        if [ -n "$nvidia_major" ]; then
+          echo "Installing libnvidia-gl-${nvidia_major}:i386 for 32-bit DXVK support..."
+          sudo apt install -y "libnvidia-gl-${nvidia_major}:i386" || \
+            echo "Warning: could not install libnvidia-gl-${nvidia_major}:i386 — check that the package exists for your driver version."
+        fi
+      fi
+      # Mesa (AMD/Intel): install 32-bit drivers if 64-bit Mesa ICDs are present
+      if [ -f /usr/share/vulkan/icd.d/radeon_icd.x86_64.json ] || \
+         [ -f /usr/share/vulkan/icd.d/intel_icd.x86_64.json ]; then
+        echo "Installing mesa-vulkan-drivers:i386 for 32-bit DXVK support..."
+        sudo apt install -y mesa-vulkan-drivers mesa-vulkan-drivers:i386 || true
+      fi
+      ;;
+  esac
+}
+
 if ! command -v wine &> /dev/null; then
   install_wine
 else
   echo "Wine is already installed: $(wine --version)"
 fi
+
+install_vulkan_drivers
 
 mkdir -p "$WINEPREFIX"
 
