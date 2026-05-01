@@ -390,8 +390,7 @@ done
 
 Happy ladder climbing!
 
-<details>
-<summary><strong>Legacy Method: Lutris + Proton-GE (deprecated)</strong></summary>
+## Legacy Method: Lutris + Proton-GE (deprecated)
 
 > [!WARNING]
 > This method is deprecated. The Wine-based guide above is the recommended approach.
@@ -792,5 +791,3 @@ Observing FLO games works.
 ![observation](./assets/observation.png)
 
 ![WC3](./assets/Warcraft.png)
-
-</details>
