@@ -15,11 +15,3 @@ echo "Setting up wine prefix"
 mkdir -p "$WINEPREFIX"
 wineboot --init
 winetricks -q dxvk
-
-echo "Installing DXVK DLLs"
-for dll in "$BASE_DIR"/dxvk/x32/*.dll; do
-  cp "$dll" "$WINEPREFIX/drive_c/windows/syswow64/"
-done
-for dll in "$BASE_DIR"/dxvk/x64/*.dll; do
-  cp "$dll" "$WINEPREFIX/drive_c/windows/system32/"
-done

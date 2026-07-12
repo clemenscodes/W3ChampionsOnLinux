@@ -10,10 +10,10 @@ then proceeds to set up DXVK, WebView2, Battle.net, and W3Champions.
 bash setup_complete.sh
 ```
 
-You can optionally pass a custom wine prefix path and a GitHub token (needed to download the DXVK artifact without the `gh` CLI):
+You can optionally pass a custom wine prefix path:
 
 ```sh
-bash setup_complete.sh --prefix="$HOME/Games/W3Champions" --token="<your-github-token>"
+bash setup_complete.sh --prefix="$HOME/Games/W3Champions"
 ```
 
 If you prefer to follow the steps manually, continue below.
@@ -80,35 +80,9 @@ sudo apt install --install-recommends winehq-staging winetricks
 
 ## Install DXVK
 
-Since wine added support for shared resources, DXVK has not yet published a release that is compatible with this new change.
-However, the support is implemented on the [master branch](https://github.com/doitsujin/dxvk)
-thanks to the following [Pull Request](https://github.com/doitsujin/dxvk/pull/5257).
+Wine added support for shared resources and DXVK published a release that is compatible with this new change.
 
-To get a supported DXVK version one can manually download the artifacts from the
-[action workflows](<https://github.com/doitsujin/dxvk/actions?query=branch%3Amaster+workflow%3A"Artifacts%20(Package)">).
-
-You should manually download the latest artifact that has a green checkmark.
-
-![DXVK Workflow Actions Download Page](./assets/dxvk-actions.png)
-
-![DXVK Artifact Download](./assets/dxvk-artifact-download.png)
-
-Once you got a version with support, extract the ZIP file.
-
-![DXVK ZIP extraction](./assets/dxvk-extract.png)
-
-> [!NOTE]
-> Debian/Ubuntu users: make sure `unzip` is installed first: `sudo apt install unzip`
-
-```sh
-unzip <dxvk-branch-download-revision>.zip
-```
-
-Assuming you are in the same directory as when you extracted the DXVK ZIP file, you should have two directories.
-
-`x64` and `x32`.
-
-Then you can install this DXVK version in the desired wine prefix as follows:
+You can install this DXVK version in the desired wine prefix as follows:
 
 ```sh
 export WINEPATH="$HOME/Games"
@@ -117,19 +91,7 @@ export WINEPREFIX="$WINEPATH/W3Champions"
 mkdir -p "$WINEPREFIX"
 wineboot --init
 winetricks -q dxvk
-
-echo "Installing DXVK DLLs"
-for dll in ./x64/*.dll; do
-  cp "$dll" "$WINEPREFIX/drive_c/windows/system32/"
-done
-for dll in ./x32/*.dll; do
-  cp "$dll" "$WINEPREFIX/drive_c/windows/syswow64/"
-done
 ```
-
-> [!NOTE]
-> It may seem unintuitive, but the DLLs really have to go in these respective directories
-> according to the upstream [documentation](https://github.com/doitsujin/dxvk?tab=readme-ov-file#how-to-use)
 
 ## WebView2 Runtime (IMPORTANT)
 
@@ -230,7 +192,7 @@ If something isn't working, run the diagnostic script and paste the full output 
 bash scripts/diagnose.sh
 ```
 
-It checks Wine version, DXVK version and DLL overrides, Windows version in the prefix, WebView2 runtime, Vulkan drivers (64-bit and 32-bit), GPU driver versions against DXVK minimum requirements, game installations, Bonjour, and firewall ports.
+It checks Wine version, DXVK version, Windows version in the prefix, WebView2 runtime, Vulkan drivers (64-bit and 32-bit), GPU driver versions against DXVK minimum requirements, game installations, Bonjour, and firewall ports.
 
 Ideally you should see an output similar to this:
 
