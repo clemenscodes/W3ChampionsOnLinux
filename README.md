@@ -688,7 +688,7 @@ You should be able to click Play on the legacy launcher and have it start Warcra
 
 #### Mouse cursor disappears
 
-When the mouse disappears, switching workspaces while moving the mouse tends to re-render it on top of the W3Champions window.
+When the mouse disappears, ALT+R re-renders the mouse cursor. On some machines, switching workspaces while moving the mouse tends to re-render it on top of the W3Champions window, too.
 Preventing the window manager from decorating the Warcraft and W3Champions windows can help.
 As a last resort, you can use a virtual desktop in wine — the cursor will be rendered properly at all times inside it.
 
